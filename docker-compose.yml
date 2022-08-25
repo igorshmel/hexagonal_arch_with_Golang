@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    expose:
+        - 5432
+    environment:
+        POSTGRES_USER: $DB_USERNAME
+        POSTGRES_PASSWORD: $DB_PASSWORD
+        POSTGRES_DB: $DB_NAME
+    volumes:
+        - ./tmp/pg:/var/lib/postgresql/data
+
+  nats:
+    image: nats:latest
+    ports:
+      - 6222:6222
+      - 4222:4222
+      - 8222:8222
+
+  app:
+    build: 
+      context: .
+      dockerfile: dev.Dockerfile
+    command:  --verbose --trigger -- go build cmd/helloworld/main.go -- ./main
+    env_file: .env
+    volumes:
+      - ./pkg:/src/pkg
+      - ./cmd:/src/cmd
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+      - nats
+
+  spawasm:
+    build: 
+      context: .
+      dockerfile: cmd/frontend/dev.Dockerfile
+    volumes:
+      - ./pkg:/src/pkg
+      - ./cmd:/src/cmd
+    ports:
+      - 3000:3000
+    depends_on:
+      - app
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
