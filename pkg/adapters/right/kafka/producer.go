@@ -53,6 +53,7 @@ func New(cfg *config.Config) (*Adapter, error) {
 }
 
 func (a *Adapter) FileProduce(filePr *pb.FilePr, topic string) error {
+
 	err := a.produce(filePr, topic)
 	if err != nil {
 		fmt.Printf("Failed fileProduce: %s\n", err)
@@ -76,7 +77,7 @@ func (a *Adapter) TestProduce(fileName string, topic string) error {
 func (a *Adapter) produce(value interface{}, topic string) error {
 	deliveryChan := make(chan kafka.Event)
 
-	payload, err := a.serializer.Serialize(topic, &value)
+	payload, err := a.serializer.Serialize(topic, value)
 	if err != nil {
 		fmt.Printf("Failed to serialize payload: %s\n", err)
 		return err
