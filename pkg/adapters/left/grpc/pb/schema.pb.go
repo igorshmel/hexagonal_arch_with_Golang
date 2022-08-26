@@ -114,6 +114,100 @@ func (x *Input) GetName() string {
 	return ""
 }
 
+type FileReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+}
+
+func (x *FileReq) Reset() {
+	*x = FileReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_schema_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FileReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileReq) ProtoMessage() {}
+
+func (x *FileReq) ProtoReflect() protoreflect.Message {
+	mi := &file_schema_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileReq.ProtoReflect.Descriptor instead.
+func (*FileReq) Descriptor() ([]byte, []int) {
+	return file_schema_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *FileReq) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+type FileRpl struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error string `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *FileRpl) Reset() {
+	*x = FileRpl{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_schema_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FileRpl) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileRpl) ProtoMessage() {}
+
+func (x *FileRpl) ProtoReflect() protoreflect.Message {
+	mi := &file_schema_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileRpl.ProtoReflect.Descriptor instead.
+func (*FileRpl) Descriptor() ([]byte, []int) {
+	return file_schema_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *FileRpl) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_schema_proto protoreflect.FileDescriptor
 
 var file_schema_proto_rawDesc = []byte{
@@ -122,11 +216,18 @@ var file_schema_proto_rawDesc = []byte{
 	0x67, 0x72, 0x65, 0x65, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
 	0x67, 0x72, 0x65, 0x65, 0x74, 0x69, 0x6e, 0x67, 0x22, 0x1b, 0x0a, 0x05, 0x49, 0x6e, 0x70, 0x75,
 	0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x32, 0x34, 0x0a, 0x0a, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x57, 0x6f,
-	0x72, 0x6c, 0x64, 0x12, 0x26, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x47, 0x72, 0x65, 0x65, 0x74, 0x69,
-	0x6e, 0x67, 0x12, 0x09, 0x2e, 0x70, 0x62, 0x2e, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0a, 0x2e,
-	0x70, 0x62, 0x2e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x42, 0x06, 0x5a, 0x04, 0x2e,
-	0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x1b, 0x0a, 0x07, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x65, 0x71,
+	0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75,
+	0x72, 0x6c, 0x22, 0x1f, 0x0a, 0x07, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x70, 0x6c, 0x12, 0x14, 0x0a,
+	0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72,
+	0x72, 0x6f, 0x72, 0x32, 0x63, 0x0a, 0x0a, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x57, 0x6f, 0x72, 0x6c,
+	0x64, 0x12, 0x26, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x47, 0x72, 0x65, 0x65, 0x74, 0x69, 0x6e, 0x67,
+	0x12, 0x09, 0x2e, 0x70, 0x62, 0x2e, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0a, 0x2e, 0x70, 0x62,
+	0x2e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x12, 0x2d, 0x0a, 0x0f, 0x46, 0x69, 0x6c,
+	0x65, 0x46, 0x6f, 0x72, 0x44, 0x6f, 0x77, 0x6e, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x0b, 0x2e, 0x70,
+	0x62, 0x2e, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x1a, 0x0b, 0x2e, 0x70, 0x62, 0x2e, 0x46,
+	0x69, 0x6c, 0x65, 0x52, 0x70, 0x6c, 0x22, 0x00, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -141,16 +242,20 @@ func file_schema_proto_rawDescGZIP() []byte {
 	return file_schema_proto_rawDescData
 }
 
-var file_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_schema_proto_goTypes = []interface{}{
-	(*Answer)(nil), // 0: pb.Answer
-	(*Input)(nil),  // 1: pb.Input
+	(*Answer)(nil),  // 0: pb.Answer
+	(*Input)(nil),   // 1: pb.Input
+	(*FileReq)(nil), // 2: pb.FileReq
+	(*FileRpl)(nil), // 3: pb.FileRpl
 }
 var file_schema_proto_depIdxs = []int32{
 	1, // 0: pb.HelloWorld.GetGreeting:input_type -> pb.Input
-	0, // 1: pb.HelloWorld.GetGreeting:output_type -> pb.Answer
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: pb.HelloWorld.FileForDownload:input_type -> pb.FileReq
+	0, // 2: pb.HelloWorld.GetGreeting:output_type -> pb.Answer
+	3, // 3: pb.HelloWorld.FileForDownload:output_type -> pb.FileRpl
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -186,6 +291,30 @@ func file_schema_proto_init() {
 				return nil
 			}
 		}
+		file_schema_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FileReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_schema_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FileRpl); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -193,7 +322,7 @@ func file_schema_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_schema_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

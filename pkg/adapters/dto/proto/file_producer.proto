@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option go_package="./;pb";
+
+message FilePr {
+    string name = 1;
+    string url  = 2;
+}

@@ -12,6 +12,15 @@ message Input {
   string name = 1;
 }
 
+message FileReq{
+  string url = 1;
+}
+
+message FileRpl {
+  string error = 1;
+}
+
 service HelloWorld {
   rpc GetGreeting(Input) returns (Answer) {}
+  rpc FileForDownload(FileReq) returns (FileRpl) {}
 }

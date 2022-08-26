@@ -56,6 +56,7 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	if migrate {
 		err := db.AutoMigrate(
 			&models.Greeting{},
+			&models.File{},
 		)
 		if err != nil {
 			return nil, err
@@ -68,15 +69,24 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) GetRandomGreeting(name string) string {
+func (ths *Adapter) GetRandomGreeting(name string) string {
 	g := models.Greeting{Greeting: name}
-	err := a.db.Table("greetings").Create(&g).Error
+	err := ths.db.Table("greetings").Create(&g).Error
 	if err != nil {
 		return err.Error()
 	}
 	return "OK"
 }
 
-func (a *Adapter) GetGreetings() []string {
+func (ths *Adapter) GetGreetings() []string {
+	return nil
+}
+
+func (ths *Adapter) WriteFileToDownload(name, url string) error {
+	model := models.File{FileName: name, FileUrl: url}
+	err := ths.db.Table("files").Create(&model).Error
+	if err != nil {
+		return err
+	}
 	return nil
 }
