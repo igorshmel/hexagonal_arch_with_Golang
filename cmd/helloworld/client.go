@@ -39,15 +39,17 @@ func main() {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	/*
-		r, err := c.GetGreeting(ctx, &pb.Input{Name: *name})
-		if err != nil {
-			log.Fatalf("could not greet: %v", err)
-		}
-	*/
-	r, err := c.FileForDownload(ctx, &pb.FileReq{Url: url})
+
+	rr, err := c.GetGreeting(ctx, &pb.Input{Name: *name})
 	if err != nil {
-		log.Fatalf("could not call FileForDownload: %v", err)
+		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Rpl from FileForDownload: %s\n", r.String())
+	log.Printf("Rpl from Greeting: %s\n", rr.String())
+	/*
+		r, err := c.FileForDownload(ctx, &pb.FileReq{Url: url})
+		if err != nil {
+			log.Fatalf("could not call FileForDownload: %v", err)
+		}
+		log.Printf("Rpl from FileForDownload: %s\n", r.String())
+	*/
 }
