@@ -7,7 +7,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
-	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka/pb"
+	"hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/ports"
 )
@@ -52,21 +52,35 @@ func New(cfg *config.Config) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) TestProduce(name string, topic string) string {
+func (a *Adapter) FileProduce(filePr *pb.FilePr, topic string) error {
 
-	// Optional delivery channel, if not specified the Producer object's
-	// .Events channel is used.
+	err := a.produce(filePr, topic)
+	if err != nil {
+		fmt.Printf("Failed fileProduce: %s\n", err)
+	}
+	return nil
+}
+
+func (a *Adapter) TestProduce(fileName string, topic string) error {
+
+	value := pb.FilePr{
+		Name: fileName,
+		Url:  "green",
+	}
+	err := a.produce(&value, topic)
+	if err != nil {
+		fmt.Printf("Failed fileProduce: %s\n", err)
+	}
+	return nil
+}
+
+func (a *Adapter) produce(value interface{}, topic string) error {
 	deliveryChan := make(chan kafka.Event)
 
-	value := pb.User{
-		Name:           name,
-		FavoriteNumber: 667,
-		FavoriteColor:  "green",
-	}
-	payload, err := a.serializer.Serialize(topic, &value)
+	payload, err := a.serializer.Serialize(topic, value)
 	if err != nil {
 		fmt.Printf("Failed to serialize payload: %s\n", err)
-		return ""
+		return err
 	}
 
 	err = a.producer.Produce(&kafka.Message{
@@ -76,7 +90,7 @@ func (a *Adapter) TestProduce(name string, topic string) string {
 	}, deliveryChan)
 	if err != nil {
 		fmt.Printf("Produce failed: %v\n", err)
-		return ""
+		return err
 	}
 
 	e := <-deliveryChan
@@ -91,5 +105,5 @@ func (a *Adapter) TestProduce(name string, topic string) string {
 
 	close(deliveryChan)
 
-	return "OK!"
+	return nil
 }

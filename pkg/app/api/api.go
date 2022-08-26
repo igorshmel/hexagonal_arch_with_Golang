@@ -1,6 +1,9 @@
 package api
 
 import (
+	"fmt"
+
+	"hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/ports"
 )
@@ -24,7 +27,22 @@ func New(cfg *config.Config, db ports.DbPort, kf ports.KafkaPort, greeter HelloW
 	}
 }
 
-func (a *Application) SayHello(name string) string {
-	a.kf.TestProduce(name, "myTopic")
-	return a.greeter.HelloWorld(a.db.GetRandomGreeting(name), name) + "!"
+func (ths *Application) SayHello(name string) string {
+	err := ths.kf.TestProduce(name, "myTopic")
+	if err != nil {
+		fmt.Printf("Error  %s\n", err.Error())
+	}
+	return ths.greeter.HelloWorld(ths.db.GetRandomGreeting(name), name) + "!"
+}
+
+func (ths *Application) FileDownload(file *pb.FilePr) error {
+	err := ths.db.WriteFileToDownload(file.Name, file.Url)
+	if err != nil {
+		fmt.Printf("Error DB %s\n", err.Error())
+	}
+	err = ths.kf.FileProduce(file, "file")
+	if err != nil {
+		fmt.Printf("Error  %s\n", err.Error())
+	}
+	return nil
 }

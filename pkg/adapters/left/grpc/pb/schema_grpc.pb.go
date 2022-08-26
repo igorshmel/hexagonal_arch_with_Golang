@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HelloWorldClient interface {
 	GetGreeting(ctx context.Context, in *Input, opts ...grpc.CallOption) (*Answer, error)
+	FileForDownload(ctx context.Context, in *FileReq, opts ...grpc.CallOption) (*FileRpl, error)
 }
 
 type helloWorldClient struct {
@@ -42,11 +43,21 @@ func (c *helloWorldClient) GetGreeting(ctx context.Context, in *Input, opts ...g
 	return out, nil
 }
 
+func (c *helloWorldClient) FileForDownload(ctx context.Context, in *FileReq, opts ...grpc.CallOption) (*FileRpl, error) {
+	out := new(FileRpl)
+	err := c.cc.Invoke(ctx, "/pb.HelloWorld/FileForDownload", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HelloWorldServer is the server API for HelloWorld service.
 // All implementations should embed UnimplementedHelloWorldServer
 // for forward compatibility
 type HelloWorldServer interface {
 	GetGreeting(context.Context, *Input) (*Answer, error)
+	FileForDownload(context.Context, *FileReq) (*FileRpl, error)
 }
 
 // UnimplementedHelloWorldServer should be embedded to have forward compatible implementations.
@@ -55,6 +66,9 @@ type UnimplementedHelloWorldServer struct {
 
 func (UnimplementedHelloWorldServer) GetGreeting(context.Context, *Input) (*Answer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGreeting not implemented")
+}
+func (UnimplementedHelloWorldServer) FileForDownload(context.Context, *FileReq) (*FileRpl, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FileForDownload not implemented")
 }
 
 // UnsafeHelloWorldServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +100,24 @@ func _HelloWorld_GetGreeting_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HelloWorld_FileForDownload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FileReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HelloWorldServer).FileForDownload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.HelloWorld/FileForDownload",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HelloWorldServer).FileForDownload(ctx, req.(*FileReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HelloWorld_ServiceDesc is the grpc.ServiceDesc for HelloWorld service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +128,10 @@ var HelloWorld_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetGreeting",
 			Handler:    _HelloWorld_GetGreeting_Handler,
+		},
+		{
+			MethodName: "FileForDownload",
+			Handler:    _HelloWorld_FileForDownload_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
