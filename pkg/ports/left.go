@@ -11,5 +11,5 @@ type APIPort interface {
 }
 
 type KafkaConsumerPort interface {
-	TestConsumer([]string, protoreflect.MessageType) error
+	TestConsumer([]string, protoreflect.MessageType)
 }

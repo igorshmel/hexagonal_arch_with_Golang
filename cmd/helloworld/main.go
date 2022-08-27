@@ -8,10 +8,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/adapters/left/grpc"
+	kafkaCons "hexagonal_arch_with_Golang/pkg/adapters/left/kafka"
 	pgql "hexagonal_arch_with_Golang/pkg/adapters/right/db"
 	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka"
-
 	//"hexagonal_arch_with_Golang/pkg/adapters/right/memory"
 	"hexagonal_arch_with_Golang/pkg/app/api"
 	"hexagonal_arch_with_Golang/pkg/app/core/helloworld"
@@ -53,6 +54,13 @@ func main() {
 		fmt.Println("Could not create GRPC: ", err)
 	} else {
 		go rpc.Run()
+	}
+
+	kafkaC, err := kafkaCons.New(cfg, "667")
+	if err != nil {
+		fmt.Println("Could not create kafkaCons: ", err)
+	} else {
+		go kafkaC.TestConsumer([]string{"file", "myTopic"}, (&ppb.FilePr{}).ProtoReflect().Type())
 	}
 
 	/*

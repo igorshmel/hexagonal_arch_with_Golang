@@ -7,7 +7,8 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
-	"hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
+	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
+	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/ports"
 )
@@ -52,7 +53,7 @@ func New(cfg *config.Config) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) FileProduce(filePr *pb.FilePr, topic string) error {
+func (a *Adapter) FileProduce(filePr *ppb.FilePr, topic string) error {
 
 	err := a.produce(filePr, topic)
 	if err != nil {
@@ -63,9 +64,10 @@ func (a *Adapter) FileProduce(filePr *pb.FilePr, topic string) error {
 
 func (a *Adapter) TestProduce(fileName string, topic string) error {
 
-	value := pb.FilePr{
-		Name: fileName,
-		Url:  "green",
+	value := pb.User{
+		Name:           fileName,
+		FavoriteNumber: 6,
+		FavoriteColor:  "green",
 	}
 	err := a.produce(&value, topic)
 	if err != nil {

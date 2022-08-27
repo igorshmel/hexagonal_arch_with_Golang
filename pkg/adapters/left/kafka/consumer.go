@@ -11,6 +11,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/ports"
@@ -64,9 +65,8 @@ func New(cfg *config.Config, group string) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) error {
+func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) {
 
-	mt = (&pb.User{}).ProtoReflect().Type()
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
@@ -75,9 +75,13 @@ func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) err
 	// Register the Protobuf type so that Deserialize can be called.
 	// An alternative is to pass a pointer to an instance of the Protobuf type
 	// to the DeserializeInto method.
-	err = a.deserializer.ProtoRegistry.RegisterMessage(mt)
+	err = a.deserializer.ProtoRegistry.RegisterMessage((&ppb.FilePr{}).ProtoReflect().Type())
 	if err != nil {
-		return err
+		fmt.Printf("filed deserializer for %v \n", mt)
+	}
+	err = a.deserializer.ProtoRegistry.RegisterMessage((&pb.User{}).ProtoReflect().Type())
+	if err != nil {
+		fmt.Printf("filed deserializer for %v \n", mt)
 	}
 	run := true
 
@@ -101,6 +105,8 @@ func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) err
 					switch value.(type) {
 					case *pb.User:
 						fmt.Printf("User: %v\n", value)
+					case *ppb.FilePr:
+						fmt.Printf("FilePr from Cons: %v\n", value)
 					}
 					fmt.Printf("%% Message on %s:\n%+v\n", e.TopicPartition, value)
 				}
@@ -113,7 +119,7 @@ func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) err
 				// automatically recover.
 				_, err = fmt.Fprintf(os.Stderr, "%% Error: %v: %v\n", e.Code(), e)
 				if err != nil {
-					return err
+					fmt.Printf("filed Fprint for kafkaError %s \n", err.Error())
 				}
 			default:
 				fmt.Printf("Ignored %v\n", e)
@@ -124,7 +130,6 @@ func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) err
 	fmt.Printf("Closing consumer\n")
 	err = a.consumer.Close()
 	if err != nil {
-		return err
+		fmt.Printf("filed closing consumer %s \n", err.Error())
 	}
-	return nil
 }
