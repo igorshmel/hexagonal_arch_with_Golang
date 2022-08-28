@@ -21,10 +21,13 @@ func New(cfg *config.Config) *Adapter {
 	}
 }
 
-func (a *Adapter) GetRandomGreeting(name string) string {
-	return a.greetings[rand.Intn(len(a.greetings))]
+func (ths *Adapter) GetRandomGreeting(name string) string {
+	return ths.greetings[rand.Intn(len(ths.greetings))]
 }
 
-func (a *Adapter) GetGreetings() []string {
-	return a.greetings
+func (ths *Adapter) GetGreetings() []string {
+	return ths.greetings
+}
+func (ths *Adapter) WriteFileToDownload(fileName, fileUrl, fileStatus string) error {
+	return nil
 }

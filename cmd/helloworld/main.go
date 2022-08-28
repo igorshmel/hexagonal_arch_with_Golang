@@ -8,14 +8,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/adapters/left/grpc"
 	kafkaCons "hexagonal_arch_with_Golang/pkg/adapters/left/kafka"
 	pgql "hexagonal_arch_with_Golang/pkg/adapters/right/db"
 	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka"
+	postDomain "hexagonal_arch_with_Golang/pkg/app/domain/post"
+	"hexagonal_arch_with_Golang/pkg/dto/pb"
+
 	//"hexagonal_arch_with_Golang/pkg/adapters/right/memory"
 	"hexagonal_arch_with_Golang/pkg/app/api"
-	"hexagonal_arch_with_Golang/pkg/app/core/helloworld"
+	"hexagonal_arch_with_Golang/pkg/app/domain/helloworld"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
 
@@ -45,8 +47,9 @@ func main() {
 	}
 
 	// Create the Domain layer and Application layer
-	hw := helloworld.New(cfg)
-	app := api.New(cfg, db, kf, hw)
+	hw := hellowordDomain.New(cfg)
+	post := postDomain.New(cfg, "", "", "", "parseFileUrl", "parseFileUrl", "image")
+	app := api.New(cfg, db, kf, hw, post)
 
 	// Create left adapters
 	rpc, err := grpc.New(cfg, app)
@@ -56,11 +59,11 @@ func main() {
 		go rpc.Run()
 	}
 
-	kafkaC, err := kafkaCons.New(cfg, "667")
+	kafkaC, err := kafkaCons.New(cfg, "667", app)
 	if err != nil {
 		fmt.Println("Could not create kafkaCons: ", err)
 	} else {
-		go kafkaC.TestConsumer([]string{"file", "myTopic"}, (&ppb.FilePr{}).ProtoReflect().Type())
+		kafkaC.Consumer([]string{"file", "myTopic"}, (&pb.FileProducer{}).ProtoReflect().Type(), (&pb.User{}).ProtoReflect().Type())
 	}
 
 	/*

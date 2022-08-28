@@ -11,9 +11,8 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
-	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
+	"hexagonal_arch_with_Golang/pkg/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/ports"
 )
 
@@ -21,11 +20,12 @@ type Adapter struct {
 	cfg          *config.Config
 	consumer     *kafka.Consumer
 	deserializer *protobuf.Deserializer
+	app          ports.APIPort
 }
 
 var _ ports.KafkaConsumerPort = &Adapter{}
 
-func New(cfg *config.Config, group string) (*Adapter, error) {
+func New(cfg *config.Config, group string, app ports.APIPort) (*Adapter, error) {
 
 	bootstrapServers := cfg.Kafka.BootStrapServers
 	schemaRegistryUrl := cfg.Kafka.SchemaRegistryUrl
@@ -62,27 +62,33 @@ func New(cfg *config.Config, group string) (*Adapter, error) {
 		cfg:          cfg,
 		consumer:     c,
 		deserializer: deser,
+		app:          app,
 	}, nil
 }
 
-func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) {
+func (a *Adapter) Consumer(topics []string, messageTypes ...protoreflect.MessageType) {
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	err := a.consumer.SubscribeTopics(topics, nil)
-
 	// Register the Protobuf type so that Deserialize can be called.
 	// An alternative is to pass a pointer to an instance of the Protobuf type
 	// to the DeserializeInto method.
-	err = a.deserializer.ProtoRegistry.RegisterMessage((&ppb.FilePr{}).ProtoReflect().Type())
-	if err != nil {
-		fmt.Printf("filed deserializer for %v \n", mt)
+	for _, mt := range messageTypes {
+		err = a.deserializer.ProtoRegistry.RegisterMessage(mt)
+		if err != nil {
+			fmt.Printf("filed deserializer for %v \n", mt)
+		}
 	}
-	err = a.deserializer.ProtoRegistry.RegisterMessage((&pb.User{}).ProtoReflect().Type())
-	if err != nil {
-		fmt.Printf("filed deserializer for %v \n", mt)
-	}
+	/*	err = a.deserializer.ProtoRegistry.RegisterMessage((&ppb.FileProducer{}).ProtoReflect().Type())
+		if err != nil {
+			fmt.Printf("filed deserializer for %v \n", mt)
+		}
+		err = a.deserializer.ProtoRegistry.RegisterMessage((&ppb.User{}).ProtoReflect().Type())
+		if err != nil {
+			fmt.Printf("filed deserializer for %v \n", mt)
+		}*/
 	run := true
 
 	for run {
@@ -105,8 +111,8 @@ func (a *Adapter) TestConsumer(topics []string, mt protoreflect.MessageType) {
 					switch value.(type) {
 					case *pb.User:
 						fmt.Printf("User: %v\n", value)
-					case *ppb.FilePr:
-						fmt.Printf("FilePr from Cons: %v\n", value)
+					case *pb.FileProducer:
+						go a.app.Download(value.(*pb.FileProducer).FileUrl, value.(*pb.FileProducer).FileName)
 					}
 					fmt.Printf("%% Message on %s:\n%+v\n", e.TopicPartition, value)
 				}
