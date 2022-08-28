@@ -1,16 +1,13 @@
 package grpc
 
-//go:generate protoc -I=proto -I=${GOPATH}/pkg/mod/ -I=${GOPATH}/src --gogofaster_out=plugins=grpc:. schema.proto
-
 import (
 	"context"
 	"fmt"
 	"log"
 	"net"
 
-	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
-	"hexagonal_arch_with_Golang/pkg/adapters/left/grpc/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
+	"hexagonal_arch_with_Golang/pkg/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/ports"
 
 	"google.golang.org/grpc"
@@ -57,7 +54,7 @@ func (a *Adapter) FileForDownload(ctx context.Context, fileReq *pb.FileReq) (*pb
 		return nil, fmt.Errorf("input is mandatory")
 	}
 
-	err := a.api.FileDownload(&ppb.FilePr{Name: fileReq.Url, Url: fileReq.Url})
+	err := a.api.FileDownload(fileReq.Url)
 	if err != nil {
 		return nil, fmt.Errorf("filed Call to FileForDownload")
 	}

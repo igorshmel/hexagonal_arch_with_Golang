@@ -7,9 +7,8 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
-	ppb "hexagonal_arch_with_Golang/pkg/adapters/dto/pb"
-	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka/pb"
 	"hexagonal_arch_with_Golang/pkg/config"
+	"hexagonal_arch_with_Golang/pkg/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/ports"
 )
 
@@ -53,9 +52,13 @@ func New(cfg *config.Config) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) FileProduce(filePr *ppb.FilePr, topic string) error {
-
-	err := a.produce(filePr, topic)
+func (a *Adapter) FileProduce(fileName, fileUrl, fileStatus, topic string) error {
+	value := pb.FileProducer{
+		FileName:   fileName,
+		FileUrl:    fileUrl,
+		FileStatus: fileStatus,
+	}
+	err := a.produce(&value, topic)
 	if err != nil {
 		fmt.Printf("Failed fileProduce: %s\n", err)
 	}

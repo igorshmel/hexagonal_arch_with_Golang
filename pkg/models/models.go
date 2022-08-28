@@ -7,6 +7,7 @@ type Greeting struct {
 
 type File struct {
 	BaseModel
-	FileName string `gorm:"type:varchar(255)"`
-	FileUrl  string `gorm:"type:varchar(255)"`
+	FileName   string `gorm:"type:varchar(255)"`
+	FileUrl    string `gorm:"type:text"`
+	FileStatus string `gorm:"type:varchar(255)"`
 }

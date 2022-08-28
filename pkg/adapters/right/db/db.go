@@ -53,6 +53,11 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
+	err = db.Migrator().DropTable("file")
+	if err != nil {
+		fmt.Println("Error Drop Table file")
+	}
+
 	if migrate {
 		err := db.AutoMigrate(
 			&models.Greeting{},
@@ -82,8 +87,8 @@ func (ths *Adapter) GetGreetings() []string {
 	return nil
 }
 
-func (ths *Adapter) WriteFileToDownload(name, url string) error {
-	model := models.File{FileName: name, FileUrl: url}
+func (ths *Adapter) WriteFileToDownload(fileName, fileUrl, fileStatus string) error {
+	model := models.File{FileName: fileName, FileUrl: fileUrl, FileStatus: fileStatus}
 	err := ths.db.Table("files").Create(&model).Error
 	if err != nil {
 		return err

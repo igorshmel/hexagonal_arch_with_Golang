@@ -20,17 +20,18 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type FilePr struct {
+type FileProducer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Url  string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	FileName   string `protobuf:"bytes,1,opt,name=fileName,proto3" json:"fileName,omitempty"`
+	FileUrl    string `protobuf:"bytes,2,opt,name=fileUrl,proto3" json:"fileUrl,omitempty"`
+	FileStatus string `protobuf:"bytes,3,opt,name=fileStatus,proto3" json:"fileStatus,omitempty"`
 }
 
-func (x *FilePr) Reset() {
-	*x = FilePr{}
+func (x *FileProducer) Reset() {
+	*x = FileProducer{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_file_producer_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -38,13 +39,13 @@ func (x *FilePr) Reset() {
 	}
 }
 
-func (x *FilePr) String() string {
+func (x *FileProducer) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*FilePr) ProtoMessage() {}
+func (*FileProducer) ProtoMessage() {}
 
-func (x *FilePr) ProtoReflect() protoreflect.Message {
+func (x *FileProducer) ProtoReflect() protoreflect.Message {
 	mi := &file_file_producer_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,21 +57,28 @@ func (x *FilePr) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use FilePr.ProtoReflect.Descriptor instead.
-func (*FilePr) Descriptor() ([]byte, []int) {
+// Deprecated: Use FileProducer.ProtoReflect.Descriptor instead.
+func (*FileProducer) Descriptor() ([]byte, []int) {
 	return file_file_producer_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *FilePr) GetName() string {
+func (x *FileProducer) GetFileName() string {
 	if x != nil {
-		return x.Name
+		return x.FileName
 	}
 	return ""
 }
 
-func (x *FilePr) GetUrl() string {
+func (x *FileProducer) GetFileUrl() string {
 	if x != nil {
-		return x.Url
+		return x.FileUrl
+	}
+	return ""
+}
+
+func (x *FileProducer) GetFileStatus() string {
+	if x != nil {
+		return x.FileStatus
 	}
 	return ""
 }
@@ -79,11 +87,14 @@ var File_file_producer_proto protoreflect.FileDescriptor
 
 var file_file_producer_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x65, 0x72, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x65, 0x50, 0x72, 0x12,
-	0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e,
-	0x61, 0x6d, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x03, 0x75, 0x72, 0x6c, 0x42, 0x07, 0x5a, 0x05, 0x2e, 0x2f, 0x3b, 0x70, 0x62, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x64, 0x0a, 0x0c, 0x46, 0x69, 0x6c, 0x65, 0x50, 0x72, 0x6f,
+	0x64, 0x75, 0x63, 0x65, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x4e, 0x61, 0x6d,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x4e, 0x61, 0x6d,
+	0x65, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x69, 0x6c, 0x65, 0x55, 0x72, 0x6c, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x66, 0x69, 0x6c, 0x65, 0x55, 0x72, 0x6c, 0x12, 0x1e, 0x0a, 0x0a, 0x66,
+	0x69, 0x6c, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0a, 0x66, 0x69, 0x6c, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x07, 0x5a, 0x05, 0x2e,
+	0x2f, 0x3b, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -100,7 +111,7 @@ func file_file_producer_proto_rawDescGZIP() []byte {
 
 var file_file_producer_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_file_producer_proto_goTypes = []interface{}{
-	(*FilePr)(nil), // 0: FilePr
+	(*FileProducer)(nil), // 0: FileProducer
 }
 var file_file_producer_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -117,7 +128,7 @@ func file_file_producer_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_file_producer_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FilePr); i {
+			switch v := v.(*FileProducer); i {
 			case 0:
 				return &v.state
 			case 1:
