@@ -1,12 +1,19 @@
 package ports
 
+import (
+	"hexagonal_arch_with_Golang/pkg/dto/pb"
+	"hexagonal_arch_with_Golang/pkg/models"
+)
+
 type DbPort interface {
-	GetRandomGreeting(string) string
-	GetGreetings() []string
-	WriteFileToDownload(fileName, fileUrl, fileStatus string) error
+	GetRandomNotification(string) string
+	NewRecordFile(model *models.PsqlFile) error
+	NotificationRecord(model *models.PsqlNotification) error
+	NewPsqlFile(fileName, filePath, fileUrl, fileHash, fileStatus string) *models.PsqlFile
+	NewPsqlNotification(name, message string) *models.PsqlNotification
 }
 
 type KafkaPort interface {
-	TestProduce(fileName string, topic string) error
-	FileProduce(fileName, fileUrl, fileStatus, topic string) error
+	NotificationProducer(message string, topic string) error
+	FileProducer(producer *pb.FileProducer) error
 }

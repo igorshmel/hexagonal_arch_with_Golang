@@ -4,12 +4,12 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-type APIPort interface {
-	SayHello(name string) string
-	FileDownload(fileUrl string) error
-	Download(fileUrl, fileName string)
+type AppPort interface {
+	AppFile(fileUrl string) error
+	Download(fileUrl, filePath, fileName string)
+	Notification(name, message string)
 }
 
 type KafkaConsumerPort interface {
-	Consumer([]string, ...protoreflect.MessageType)
+	Consumer(topics []string, mt ...protoreflect.MessageType)
 }

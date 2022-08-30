@@ -4,23 +4,12 @@ package pb;
 
 option go_package = "./pb";
 
-message Answer {
-  string greeting = 1;
-}
-
-message Input {
-  string name = 1;
-}
-
 message FileReq{
   string url = 1;
 }
 
-message FileRpl {
-  string error = 1;
-}
+message FileRpl {}
 
-service HelloWorld {
-  rpc GetGreeting(Input) returns (Answer) {}
-  rpc FileForDownload(FileReq) returns (FileRpl) {}
+service FileService {
+  rpc File(FileReq) returns (FileRpl)  {}
 }

@@ -3,7 +3,9 @@ syntax = "proto3";
 option go_package="./;pb";
 
 message FileProducer {
-    string fileName = 1;
-    string fileUrl  = 2;
-    string fileStatus  = 3;
+    string fileName     = 1;
+    string filePath     = 2;
+    string fileUrl      = 3;
+    string fileStatus   = 4;
+    string topic        = 5;
 }

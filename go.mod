@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/confluentinc/confluent-kafka-go v1.9.2
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/nats-io/nats.go v1.16.0
 	github.com/spf13/viper v1.12.0

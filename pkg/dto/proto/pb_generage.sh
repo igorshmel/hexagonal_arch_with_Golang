@@ -12,4 +12,4 @@ cd "$currentDir"
 protoc \
     --go_out="$currentDir/../pb" --go_opt=paths=source_relative \
     --go-grpc_out="$currentDir/../pb" --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
-		file_producer.proto user.proto schema.proto
+		file_producer.proto notification_producer.proto schema.proto
