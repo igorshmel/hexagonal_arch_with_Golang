@@ -15,12 +15,12 @@ import (
 
 type Adapter struct {
 	cfg    *config.Config
-	api    ports.APIPort
+	app    ports.AppPort
 	listen net.Listener
 }
 
-func New(cfg *config.Config, api ports.APIPort) (*Adapter, error) {
-	ret := &Adapter{api: api}
+func New(cfg *config.Config, app ports.AppPort) (*Adapter, error) {
+	ret := &Adapter{app: app}
 
 	listen, err := net.Listen(cfg.GRPC.Network, cfg.GRPC.Address)
 	if err != nil {
@@ -33,32 +33,21 @@ func New(cfg *config.Config, api ports.APIPort) (*Adapter, error) {
 
 func (a *Adapter) Run() {
 	grpcServer := grpc.NewServer()
-	pb.RegisterHelloWorldServer(grpcServer, a)
+	pb.RegisterFileServiceServer(grpcServer, a)
 	if err := grpcServer.Serve(a.listen); err != nil {
 		log.Fatalf("failed to serve gRPC server over address %s: %v", a.cfg.GRPC.Address, err)
 	}
 }
 
-func (a *Adapter) GetGreeting(ctx context.Context, input *pb.Input) (*pb.Answer, error) {
-	if input == nil {
-		return nil, fmt.Errorf("input is mandatory")
-	}
-
-	return &pb.Answer{
-		Greeting: a.api.SayHello(input.Name),
-	}, nil
-}
-
-func (a *Adapter) FileForDownload(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, error) {
+func (a *Adapter) File(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, error) {
 	if fileReq == nil {
 		return nil, fmt.Errorf("input is mandatory")
 	}
 
-	err := a.api.FileDownload(fileReq.Url)
+	err := a.app.AppFile(fileReq.Url)
 	if err != nil {
-		return nil, fmt.Errorf("filed Call to FileForDownload")
+		return nil, fmt.Errorf("filed Call to File()")
 	}
-	return &pb.FileRpl{
-		Error: "",
-	}, nil
+
+	return &pb.FileRpl{}, nil
 }

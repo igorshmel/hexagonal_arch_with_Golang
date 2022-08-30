@@ -53,15 +53,15 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	err = db.Migrator().DropTable("file")
+	/*err = db.Migrator().DropTable("file")
 	if err != nil {
 		fmt.Println("Error Drop Table file")
-	}
+	}*/
 
 	if migrate {
 		err := db.AutoMigrate(
-			&models.Greeting{},
-			&models.File{},
+			&models.PsqlNotification{},
+			&models.PsqlFile{},
 		)
 		if err != nil {
 			return nil, err
@@ -74,24 +74,58 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	}, nil
 }
 
-func (ths *Adapter) GetRandomGreeting(name string) string {
-	g := models.Greeting{Greeting: name}
-	err := ths.db.Table("greetings").Create(&g).Error
+func (ths *Adapter) GetRandomNotification(name string) string {
+	g := models.PsqlNotification{Name: name}
+	err := ths.db.Table("notifications").Create(&g).Error
 	if err != nil {
 		return err.Error()
 	}
 	return "OK"
 }
 
-func (ths *Adapter) GetGreetings() []string {
-	return nil
-}
-
-func (ths *Adapter) WriteFileToDownload(fileName, fileUrl, fileStatus string) error {
-	model := models.File{FileName: fileName, FileUrl: fileUrl, FileStatus: fileStatus}
-	err := ths.db.Table("files").Create(&model).Error
+func (ths *Adapter) NewRecordFile(model *models.PsqlFile) error {
+	err := ths.db.Table("files").Create(model).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
+// NewPsqlFile	takes in an aggregate
+func (ths *Adapter) NewPsqlFile(name, path, url, hash, status string) *models.PsqlFile {
+	return &models.PsqlFile{
+		FileName:   name,
+		FilePath:   path,
+		FileUrl:    url,
+		FileHash:   hash,
+		FileStatus: status,
+	}
+}
+
+// NewPsqlNotification	takes in an aggregate
+func (ths *Adapter) NewPsqlNotification(name, message string) *models.PsqlNotification {
+	return &models.PsqlNotification{
+		Name:    "file",
+		Message: message,
+	}
+}
+func (ths *Adapter) NotificationRecord(model *models.PsqlNotification) error {
+	err := ths.db.Table("notification").Create(model).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//// PsqlToDomain converts into a domain.File
+//func (ths *Adapter) PsqlToDomain() *fileDomain.File {
+//	return fileDomain.New(
+//		ths.cfg,
+//		domain.UserUUID(ths.UserUUID),
+//		domain.ConfirmToken(ths.ConfirmToken),
+//		domain.ExpiredToken(ths.ExpiredToken),
+//		domain.TypeToken(ths.TypeToken),
+//		domain.UsedFlag(ths.Used),
+//		domain.Phone(ths.Phone),
+//	)
+//}

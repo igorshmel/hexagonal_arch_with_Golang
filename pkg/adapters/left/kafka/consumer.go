@@ -20,12 +20,12 @@ type Adapter struct {
 	cfg          *config.Config
 	consumer     *kafka.Consumer
 	deserializer *protobuf.Deserializer
-	app          ports.APIPort
+	app          ports.AppPort
 }
 
 var _ ports.KafkaConsumerPort = &Adapter{}
 
-func New(cfg *config.Config, group string, app ports.APIPort) (*Adapter, error) {
+func New(cfg *config.Config, group string, app ports.AppPort) (*Adapter, error) {
 
 	bootstrapServers := cfg.Kafka.BootStrapServers
 	schemaRegistryUrl := cfg.Kafka.SchemaRegistryUrl
@@ -81,14 +81,7 @@ func (a *Adapter) Consumer(topics []string, messageTypes ...protoreflect.Message
 			fmt.Printf("filed deserializer for %v \n", mt)
 		}
 	}
-	/*	err = a.deserializer.ProtoRegistry.RegisterMessage((&ppb.FileProducer{}).ProtoReflect().Type())
-		if err != nil {
-			fmt.Printf("filed deserializer for %v \n", mt)
-		}
-		err = a.deserializer.ProtoRegistry.RegisterMessage((&ppb.User{}).ProtoReflect().Type())
-		if err != nil {
-			fmt.Printf("filed deserializer for %v \n", mt)
-		}*/
+
 	run := true
 
 	for run {
@@ -109,10 +102,17 @@ func (a *Adapter) Consumer(topics []string, messageTypes ...protoreflect.Message
 					fmt.Printf("Failed to deserialize payload: %s\n", err)
 				} else {
 					switch value.(type) {
-					case *pb.User:
-						fmt.Printf("User: %v\n", value)
+					case *pb.NotificationProducer:
+						a.app.Notification(value.(*pb.NotificationProducer).Name, value.(*pb.NotificationProducer).Message)
+						fmt.Printf("NotificationProducer: %v\n", value)
 					case *pb.FileProducer:
-						go a.app.Download(value.(*pb.FileProducer).FileUrl, value.(*pb.FileProducer).FileName)
+						if value.(*pb.FileProducer).FileStatus == "parsing" {
+							go a.app.Download(
+								value.(*pb.FileProducer).FileUrl,
+								value.(*pb.FileProducer).FilePath,
+								value.(*pb.FileProducer).FileName,
+							)
+						}
 					}
 					fmt.Printf("%% Message on %s:\n%+v\n", e.TopicPartition, value)
 				}

@@ -10,7 +10,7 @@ import (
 
 // DownloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
-func DownloadFile(filepath string, url string) error {
+func DownloadFile(filePath, url string) error {
 	// Get the data
 	if resp, err := http.Get(url); err == nil {
 		defer func() {
@@ -19,7 +19,7 @@ func DownloadFile(filepath string, url string) error {
 			}
 		}()
 		// Create the file
-		if out, err := os.Create(filepath); err == nil {
+		if out, err := os.Create(filePath); err == nil {
 			defer func() {
 				if err = out.Close(); err != nil {
 					err = errors.New("DownloadFile error out.Close(): " + fmt.Sprint(err))

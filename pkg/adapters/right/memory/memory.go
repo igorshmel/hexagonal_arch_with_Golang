@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	"hexagonal_arch_with_Golang/pkg/config"
-	"hexagonal_arch_with_Golang/pkg/ports"
 )
 
 type Adapter struct {
@@ -12,7 +11,7 @@ type Adapter struct {
 	greetings []string
 }
 
-var _ ports.DbPort = &Adapter{}
+//var _ ports.DbPort = &Adapter{}
 
 func New(cfg *config.Config) *Adapter {
 	return &Adapter{
@@ -21,13 +20,10 @@ func New(cfg *config.Config) *Adapter {
 	}
 }
 
-func (ths *Adapter) GetRandomGreeting(name string) string {
+func (ths *Adapter) GetRandomNotification(name string) string {
 	return ths.greetings[rand.Intn(len(ths.greetings))]
 }
 
-func (ths *Adapter) GetGreetings() []string {
-	return ths.greetings
-}
-func (ths *Adapter) WriteFileToDownload(fileName, fileUrl, fileStatus string) error {
+func (ths *Adapter) NewRecordFile(fileName, fileUrl, fileStatus string) error {
 	return nil
 }

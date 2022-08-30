@@ -8,7 +8,6 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
 	"hexagonal_arch_with_Golang/pkg/config"
-	"hexagonal_arch_with_Golang/pkg/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/ports"
 )
 
@@ -50,33 +49,6 @@ func New(cfg *config.Config) (*Adapter, error) {
 		producer:   producer,
 		serializer: serializer,
 	}, nil
-}
-
-func (a *Adapter) FileProduce(fileName, fileUrl, fileStatus, topic string) error {
-	value := pb.FileProducer{
-		FileName:   fileName,
-		FileUrl:    fileUrl,
-		FileStatus: fileStatus,
-	}
-	err := a.produce(&value, topic)
-	if err != nil {
-		fmt.Printf("Failed fileProduce: %s\n", err)
-	}
-	return nil
-}
-
-func (a *Adapter) TestProduce(fileName string, topic string) error {
-
-	value := pb.User{
-		Name:           fileName,
-		FavoriteNumber: 6,
-		FavoriteColor:  "green",
-	}
-	err := a.produce(&value, topic)
-	if err != nil {
-		fmt.Printf("Failed fileProduce: %s\n", err)
-	}
-	return nil
 }
 
 func (a *Adapter) produce(value interface{}, topic string) error {
