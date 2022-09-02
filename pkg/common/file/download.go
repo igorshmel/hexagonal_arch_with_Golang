@@ -30,6 +30,7 @@ func DownloadFile(filePath, url string) error {
 				err = errors.New("DownloadFile error io.Copy: " + fmt.Sprint(err))
 				return err
 			}
+
 		} else {
 			err = errors.New("DownloadFile error os.Create: " + fmt.Sprint(err))
 			return err

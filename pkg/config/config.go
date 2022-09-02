@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"hexagonal_arch_with_Golang/pkg/logger"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 
 type Config struct {
 	Context context.Context
-	Logger  *log.Logger
+	Logger  logger.Log
 
 	HostName     string
 	FrontEndPath string
@@ -31,7 +32,6 @@ type Config struct {
 	Server       Server
 	GRPC         GRPC
 	Db           Db
-	NATS         NATS
 	Kafka        Kafka
 }
 
@@ -49,13 +49,6 @@ type GRPC struct {
 type Kafka struct {
 	BootStrapServers  string
 	SchemaRegistryUrl string
-}
-
-type NATS struct {
-	URL      string
-	Username string
-	Password string
-	TopicID  string
 }
 
 type Db struct {
@@ -92,7 +85,7 @@ func New(ctx context.Context) *Config {
 
 	return &Config{
 		Context: ctx,
-		Logger:  log.Default(),
+		Logger:  logger.Log{},
 	}
 }
 
@@ -133,12 +126,6 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 		Kafka: Kafka{
 			BootStrapServers:  v.GetString("KAFKA_BOOTSTRAP_SERVERS"),
 			SchemaRegistryUrl: v.GetString("SCHEMA_REGISTRY_URL"),
-		},
-		NATS: NATS{
-			URL:      v.GetString("NATS_URL"),
-			Username: v.GetString("NATS_USERNAME"),
-			Password: v.GetString("NATS_PASSWORD"),
-			TopicID:  v.GetString("NATS_TOPIC_ID"),
 		},
 		Db: Db{
 			Username: v.GetString("DB_USERNAME"),

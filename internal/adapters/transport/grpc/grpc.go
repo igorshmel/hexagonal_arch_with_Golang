@@ -6,11 +6,10 @@ import (
 	"log"
 	"net"
 
+	"google.golang.org/grpc"
+	"hexagonal_arch_with_Golang/internal/adapters/ports"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
-	"hexagonal_arch_with_Golang/pkg/ports"
-
-	"google.golang.org/grpc"
 )
 
 type Adapter struct {
@@ -44,7 +43,7 @@ func (a *Adapter) File(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, e
 		return nil, fmt.Errorf("input is mandatory")
 	}
 
-	err := a.app.AppFile(fileReq.Url)
+	err := a.app.NewFile(fileReq.Url)
 	if err != nil {
 		return nil, fmt.Errorf("filed Call to File()")
 	}

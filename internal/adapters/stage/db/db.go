@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"hexagonal_arch_with_Golang/pkg/config"
-	"hexagonal_arch_with_Golang/pkg/models"
-	"hexagonal_arch_with_Golang/pkg/ports"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"hexagonal_arch_with_Golang/internal/adapters/ports"
+	"hexagonal_arch_with_Golang/internal/app/domain/file"
+	"hexagonal_arch_with_Golang/internal/models"
+	"hexagonal_arch_with_Golang/pkg/config"
 )
 
 type Adapter struct {
@@ -91,24 +91,44 @@ func (ths *Adapter) NewRecordFile(model *models.PsqlFile) error {
 	return nil
 }
 
-// NewPsqlFile	takes in an aggregate
-func (ths *Adapter) NewPsqlFile(name, path, url, hash, status string) *models.PsqlFile {
-	return &models.PsqlFile{
-		FileName:   name,
-		FilePath:   path,
-		FileUrl:    url,
-		FileHash:   hash,
-		FileStatus: status,
+func (ths *Adapter) ChangeStatusFile(fileName, fileStatus string) error {
+	err := ths.db.Table("files").
+		Where("file_name=?", fileName).UpdateColumn("file_status", fileStatus).Error
+	if err != nil {
+		return err
 	}
+	return nil
 }
 
-// NewPsqlNotification	takes in an aggregate
-func (ths *Adapter) NewPsqlNotification(name, message string) *models.PsqlNotification {
-	return &models.PsqlNotification{
-		Name:    "file",
-		Message: message,
+func (ths *Adapter) ReadFile(domain *fileDomain.File) error {
+	err := ths.db.Table("files").Where("file_name=?", domain.GetFileName()).Find(domain).Error
+	if err != nil {
+		return err
 	}
+	return nil
 }
+
+// IsFileExists check file exists from repository
+func (ths *Adapter) IsFileExists(fileName string) bool {
+	if ths == nil || ths.db == nil || len(fileName) <= 0 {
+		return true
+	}
+
+	var exists bool
+	var psqlFile models.PsqlFile
+	err := ths.db.Model(psqlFile).
+		Select("count(*) > 0").
+		Where("file_name = ?", fileName).
+		Find(&exists).
+		Error
+	switch err {
+	case nil:
+	case gorm.ErrRecordNotFound:
+		return false
+	}
+	return exists
+}
+
 func (ths *Adapter) NotificationRecord(model *models.PsqlNotification) error {
 	err := ths.db.Table("notification").Create(model).Error
 	if err != nil {

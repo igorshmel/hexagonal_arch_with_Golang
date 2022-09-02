@@ -8,22 +8,23 @@ import (
 	"os/signal"
 	"syscall"
 
-	"hexagonal_arch_with_Golang/pkg/adapters/left/grpc"
-	kafkaCons "hexagonal_arch_with_Golang/pkg/adapters/left/kafka"
-	pgql "hexagonal_arch_with_Golang/pkg/adapters/right/db"
-	"hexagonal_arch_with_Golang/pkg/adapters/right/kafka"
-	"hexagonal_arch_with_Golang/pkg/app/application"
-	fileDomain "hexagonal_arch_with_Golang/pkg/app/domain/file"
-	"hexagonal_arch_with_Golang/pkg/dto/pb"
-
-	"hexagonal_arch_with_Golang/pkg/app/domain/notification"
+	"hexagonal_arch_with_Golang/internal/adapters/stage/db"
+	"hexagonal_arch_with_Golang/internal/adapters/stage/kafka"
+	"hexagonal_arch_with_Golang/internal/adapters/transport/grpc"
+	kafkaCons "hexagonal_arch_with_Golang/internal/adapters/transport/kafka"
+	"hexagonal_arch_with_Golang/internal/app/api"
+	"hexagonal_arch_with_Golang/internal/app/domain/file"
+	"hexagonal_arch_with_Golang/internal/app/domain/notification"
 	"hexagonal_arch_with_Golang/pkg/config"
+	"hexagonal_arch_with_Golang/pkg/dto/pb"
+	"hexagonal_arch_with_Golang/pkg/logger"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	log := logger.New(true)
 	cfg := config.New(ctx)
 	if err := cfg.Read(); err != nil {
 		if errors.Is(err, config.ErrExit) {
@@ -31,7 +32,7 @@ func main() {
 		}
 		panic(err)
 	}
-
+	cfg.Logger = log
 	// Create Right adapters
 	//db := memory.New(cfg)
 
@@ -48,7 +49,7 @@ func main() {
 	// Create the Domain layer and Application layer
 	hw := notificationDomain.New(cfg)
 	domainFile := fileDomain.New(cfg)
-	app := application.New(cfg, db, kf, hw, domainFile)
+	app := api.New(cfg, db, kf, hw, domainFile)
 
 	// Create left adapters
 	rpc, err := grpc.New(cfg, app)
@@ -65,15 +66,16 @@ func main() {
 		kafkaC.Consumer([]string{"file", "notification"}, (&pb.FileProducer{}).ProtoReflect().Type(), (&pb.NotificationProducer{}).ProtoReflect().Type())
 	}
 
-	/*
-		nc, err := nats.New(cfg, app)
-		if err != nil {
-			fmt.Println("Could not create NATS: ", err)
-		} else {
-			go nc.Run()
-		}
-	*/
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	<-c
 }
+
+// getLogger set logger config
+/*func getLogger(cfg config.Config) logger.Logger {
+	var l logger.Log
+
+	l = logger.New(true)
+
+	return l
+}*/

@@ -5,7 +5,7 @@ import (
 )
 
 type AppPort interface {
-	AppFile(fileUrl string) error
+	NewFile(fileUrl string) error
 	Download(fileUrl, filePath, fileName string)
 	Notification(name, message string)
 }

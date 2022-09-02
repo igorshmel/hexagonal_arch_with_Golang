@@ -3,7 +3,6 @@ package notificationDomain
 import (
 	"fmt"
 
-	"hexagonal_arch_with_Golang/pkg/app/application"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
 
@@ -12,7 +11,7 @@ type Notification struct {
 }
 
 // Check if we actually implement relevant api
-var _ application.Notification = &Notification{}
+//var _ api.Notification = &Notification{}
 
 func New(cfg *config.Config) *Notification {
 	return &Notification{

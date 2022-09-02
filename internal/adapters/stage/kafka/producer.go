@@ -7,8 +7,8 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
+	"hexagonal_arch_with_Golang/internal/adapters/ports"
 	"hexagonal_arch_with_Golang/pkg/config"
-	"hexagonal_arch_with_Golang/pkg/ports"
 )
 
 type Adapter struct {
@@ -29,8 +29,7 @@ func New(cfg *config.Config) (*Adapter, error) {
 		fmt.Printf("Failed to create producer: %s\n", err)
 		return nil, err
 	}
-
-	fmt.Printf("Created Producer %v\n", producer)
+	cfg.Logger.Info("Created Producer %v\n", producer)
 
 	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryUrl))
 	if err != nil {

@@ -27,3 +27,22 @@ func (PsqlFile) TableName() string {
 func (PsqlNotification) TableName() string {
 	return notificationTableName
 }
+
+// NewPsqlNotification	takes in an aggregate
+func NewPsqlNotification(name, message string) *PsqlNotification {
+	return &PsqlNotification{
+		Name:    name,
+		Message: message,
+	}
+}
+
+// NewPsqlFile	takes in an aggregate
+func NewPsqlFile(name, path, url, hash, status string) *PsqlFile {
+	return &PsqlFile{
+		FileName:   name,
+		FilePath:   path,
+		FileUrl:    url,
+		FileHash:   hash,
+		FileStatus: status,
+	}
+}
