@@ -33,12 +33,17 @@ type Config struct {
 	GRPC         GRPC
 	Db           Db
 	Kafka        Kafka
+	Env          Env
 }
 
 type Server struct {
 	Origins []string
 	Host    string
 	Address string
+}
+
+type Env struct {
+	ListenAddr string
 }
 
 type GRPC struct {
@@ -82,6 +87,7 @@ func New(ctx context.Context) *Config {
 	viper.SetDefault("DB_PORT", 5432)
 	viper.SetDefault("KAFKA_BOOTSTRAP_SERVERS", "localhost")
 	viper.SetDefault("SCHEMA_REGISTRY_URL", "http://localhost:8081")
+	viper.SetDefault("ENV_LISTEN_ADDRESS", ":9001")
 
 	return &Config{
 		Context: ctx,
@@ -118,6 +124,9 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 			Origins: strings.Split(v.GetString("ORIGINS"), ","),
 			Host:    v.GetString("HOST"),
 			Address: v.GetString("ADDRESS"),
+		},
+		Env: Env{
+			ListenAddr: v.GetString("ENV_LISTEN_ADDRESS"),
 		},
 		GRPC: GRPC{
 			Network: v.GetString("GRPC_NETWORK"),
