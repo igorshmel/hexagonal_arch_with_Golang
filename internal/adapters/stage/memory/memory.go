@@ -20,10 +20,6 @@ func New(cfg *config.Config) *Adapter {
 	}
 }
 
-func (ths *Adapter) GetRandomNotification(name string) string {
+func (ths *Adapter) GetRandomNotification() string {
 	return ths.greetings[rand.Intn(len(ths.greetings))]
-}
-
-func (ths *Adapter) NewRecordFile(fileName, fileUrl, fileStatus string) error {
-	return nil
 }

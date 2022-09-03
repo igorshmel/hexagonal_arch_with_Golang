@@ -19,3 +19,7 @@ type KafkaPort interface {
 	NotificationProducer(producer *pb.NotificationProducer) error
 	FileProducer(producer *pb.FileProducer) error
 }
+
+type MemoryPort interface {
+	GetRandomNotification() string
+}

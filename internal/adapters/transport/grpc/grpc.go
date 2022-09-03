@@ -19,7 +19,7 @@ type Adapter struct {
 }
 
 func New(cfg *config.Config, app ports.AppPort) (*Adapter, error) {
-	ret := &Adapter{app: app}
+	ret := &Adapter{cfg: cfg, app: app}
 
 	listen, err := net.Listen(cfg.GRPC.Network, cfg.GRPC.Address)
 	if err != nil {
@@ -45,7 +45,7 @@ func (a *Adapter) File(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, e
 
 	err := a.app.NewFile(fileReq.Url)
 	if err != nil {
-		return nil, fmt.Errorf("filed Call to File()")
+		return nil, fmt.Errorf("filed Call to app.NewFile()")
 	}
 
 	return &pb.FileRpl{}, nil

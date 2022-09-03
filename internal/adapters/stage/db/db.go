@@ -84,7 +84,7 @@ func (ths *Adapter) GetRandomNotification(name string) string {
 }
 
 func (ths *Adapter) NewRecordFile(model *models.PsqlFile) error {
-	err := ths.db.Table("files").Create(model).Error
+	err := ths.db.Table(model.TableName()).Create(model).Error
 	if err != nil {
 		return err
 	}

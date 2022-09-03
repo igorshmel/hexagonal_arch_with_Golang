@@ -1,0 +1,7 @@
+### запрос на скачивание нового файла
+POST {{host}}/api/file_url/
+Content-Type: application/json
+
+{
+  "file_url": "https://thispersondoesnotexist.com/image"
+}
