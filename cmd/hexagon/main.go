@@ -40,12 +40,12 @@ func main() {
 
 	db, err := pgql.New(cfg, true)
 	if err != nil {
-		log.Error("DB connect error: %s\n", err)
+		log.Error("DB connect error: %s", err)
 	}
 
 	kf, err := kafka.New(cfg)
 	if err != nil {
-		fmt.Printf("DB connect error: %s\n", err)
+		fmt.Printf("DB connect error: %s", err)
 	}
 
 	// Create the Domain layer and Application layer

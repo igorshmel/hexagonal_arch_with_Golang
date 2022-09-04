@@ -21,13 +21,13 @@ type gzipResponseWriter struct {
 	http.ResponseWriter
 }
 
-func (w *gzipResponseWriter) WriteHeader(status int) {
-	w.Header().Del("Content-Length")
-	w.ResponseWriter.WriteHeader(status)
+func (ths *gzipResponseWriter) WriteHeader(status int) {
+	ths.Header().Del("Content-Length")
+	ths.ResponseWriter.WriteHeader(status)
 }
 
-func (w *gzipResponseWriter) Write(b []byte) (int, error) {
-	return w.Writer.Write(b)
+func (ths *gzipResponseWriter) Write(b []byte) (int, error) {
+	return ths.Writer.Write(b)
 }
 
 func Gzip(next http.Handler) http.Handler {

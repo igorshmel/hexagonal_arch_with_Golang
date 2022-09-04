@@ -1,8 +1,6 @@
 package kafka
 
 import (
-	"fmt"
-
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde"
@@ -26,20 +24,20 @@ func New(cfg *config.Config) (*Adapter, error) {
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": bootstrapServers})
 	if err != nil {
-		fmt.Printf("Failed to create producer: %s\n", err)
+		cfg.Logger.Error("Failed to create producer: %s", err)
 		return nil, err
 	}
-	cfg.Logger.Info("Created Producer %v\n", producer)
+	cfg.Logger.Info("Created Producer %v", producer)
 
 	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryUrl))
 	if err != nil {
-		fmt.Printf("Failed to create schema registry client: %s\n", err)
+		cfg.Logger.Error("Failed to create schema registry client: %s", err)
 		return nil, err
 	}
 
 	serializer, err := protobuf.NewSerializer(client, serde.ValueSerde, protobuf.NewSerializerConfig())
 	if err != nil {
-		fmt.Printf("Failed to create serializer: %s\n", err)
+		cfg.Logger.Error("Failed to create serializer: %s", err)
 		return nil, err
 	}
 
@@ -50,22 +48,22 @@ func New(cfg *config.Config) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) produce(value interface{}, topic string) error {
+func (ths *Adapter) produce(value interface{}, topic string) error {
 	deliveryChan := make(chan kafka.Event)
 
-	payload, err := a.serializer.Serialize(topic, value)
+	payload, err := ths.serializer.Serialize(topic, value)
 	if err != nil {
-		fmt.Printf("Failed to serialize payload: %s\n", err)
+		ths.cfg.Logger.Error("Failed to serialize payload: %s", err)
 		return err
 	}
 
-	err = a.producer.Produce(&kafka.Message{
+	err = ths.producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
 		Value:          payload,
 		Headers:        []kafka.Header{{Key: "myTestHeader", Value: []byte("header values are binary")}},
 	}, deliveryChan)
 	if err != nil {
-		fmt.Printf("Produce failed: %v\n", err)
+		ths.cfg.Logger.Error("Produce failed: %v", err)
 		return err
 	}
 
@@ -73,9 +71,9 @@ func (a *Adapter) produce(value interface{}, topic string) error {
 	m := e.(*kafka.Message)
 
 	if m.TopicPartition.Error != nil {
-		fmt.Printf("Delivery failed: %v\n", m.TopicPartition.Error)
+		ths.cfg.Logger.Error("Delivery failed: %v", m.TopicPartition.Error)
 	} else {
-		fmt.Printf("Delivered message to topic %s [%d] at offset %v\n",
+		ths.cfg.Logger.Info("Delivered message to topic %s [%d] at offset %v",
 			*m.TopicPartition.Topic, m.TopicPartition.Partition, m.TopicPartition.Offset)
 	}
 

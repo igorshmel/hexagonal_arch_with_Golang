@@ -8,12 +8,12 @@ import (
 )
 
 func (ths *Application) Download(fileUrl, filePath, fileName string) {
-
-	fmt.Printf("\nstart gorutine for Download:  %s\n", fileName)
+	l := ths.cfg.Logger
+	l.Info("start goroutine for Download:  %s", fileName)
 
 	err := common.DownloadFile(fmt.Sprintf("%s%s", filePath, fileName), fileUrl)
 	if err != nil {
-		fmt.Printf("DownladFile error  %s\n", err.Error())
+		l.Error("DownloadFile error  %s", err.Error())
 
 		newNotificationProducer := pb.NotificationProducer{
 			Name:    fileName,
@@ -22,10 +22,10 @@ func (ths *Application) Download(fileUrl, filePath, fileName string) {
 		}
 		err = ths.kf.NotificationProducer(&newNotificationProducer)
 		if err != nil {
-			fmt.Printf("Error  %s\n", err.Error())
+			l.Error("Error  %s", err.Error())
 		}
 	} else {
-		fmt.Printf("\ndownload success! %s\n", fileName)
+		l.Info("download success! %s", fileName)
 
 		newNotificationProducer := pb.NotificationProducer{
 			Name:    fileName,
@@ -34,7 +34,7 @@ func (ths *Application) Download(fileUrl, filePath, fileName string) {
 		}
 		err = ths.kf.NotificationProducer(&newNotificationProducer)
 		if err != nil {
-			fmt.Printf("Error  %s\n", err.Error())
+			l.Error("Error  %s", err.Error())
 		}
 	}
 
@@ -42,7 +42,7 @@ func (ths *Application) Download(fileUrl, filePath, fileName string) {
 	if fileExist {
 		err = ths.db.ChangeStatusFile(fileName, "download")
 		if err != nil {
-			fmt.Printf("Error DB %s\n", err.Error())
+			l.Error("Error DB %s", err.Error())
 		}
 	}
 }

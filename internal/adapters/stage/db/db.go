@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"hexagonal_arch_with_Golang/internal/adapters/ports"
 	"hexagonal_arch_with_Golang/internal/app/domain/file"
+	notificationDomain "hexagonal_arch_with_Golang/internal/app/domain/notification"
 	"hexagonal_arch_with_Golang/internal/models"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
@@ -83,8 +84,11 @@ func (ths *Adapter) GetRandomNotification(name string) string {
 	return "OK"
 }
 
-func (ths *Adapter) NewRecordFile(model *models.PsqlFile) error {
-	err := ths.db.Table(model.TableName()).Create(model).Error
+func (ths *Adapter) NewRecordFile(fd *fileDomain.File) error {
+	psqlFileModel := fileModelFromDomain(fd)
+
+	err := ths.db.Table(psqlFileModel.TableName()).
+		Create(psqlFileModel).Error
 	if err != nil {
 		return err
 	}
@@ -129,12 +133,35 @@ func (ths *Adapter) IsFileExists(fileName string) bool {
 	return exists
 }
 
-func (ths *Adapter) NotificationRecord(model *models.PsqlNotification) error {
-	err := ths.db.Table("notification").Create(model).Error
+func (ths *Adapter) NotificationRecord(nd *notificationDomain.Notification) error {
+
+	psqlNotificationModel := notificationModelFromDomain(nd)
+
+	err := ths.db.Table(psqlNotificationModel.TableName()).
+		Create(psqlNotificationModel).Error
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func fileModelFromDomain(fd *fileDomain.File) *models.PsqlFile {
+	psqlFileModel := models.NewPsqlFile(
+		fd.GetFileName(),
+		fd.GetFilePath(),
+		fd.GetFileUrl(),
+		fd.GetFileHash(),
+		fd.GetFileStatus(),
+	)
+	return psqlFileModel
+}
+
+func notificationModelFromDomain(nd *notificationDomain.Notification) *models.PsqlNotification {
+	psqlNotificationModel := models.NewPsqlNotification(
+		nd.GetName(),
+		nd.GetMassage(),
+	)
+	return psqlNotificationModel
 }
 
 //// PsqlToDomain converts into a domain.File

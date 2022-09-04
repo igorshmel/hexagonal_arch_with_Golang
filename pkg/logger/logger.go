@@ -93,63 +93,63 @@ func New(isDebug ...bool) Log {
 }
 
 // WithPrefix setting a prefix for log message
-func (l Log) WithPrefix(prefix string) Logger {
-	l.requestID = prefix
-	return l
+func (ths Log) WithPrefix(prefix string) Logger {
+	ths.requestID = prefix
+	return ths
 }
 
 // WithRequestID setting a request id for log message
-func (l Log) WithRequestID(reqID string) Logger {
-	l.requestID = reqID
-	return l
+func (ths Log) WithRequestID(reqID string) Logger {
+	ths.requestID = reqID
+	return ths
 }
 
 // WithMethod setting a method for log message
-func (l Log) WithMethod(method string) Logger {
-	l.method = method
-	return l
+func (ths Log) WithMethod(method string) Logger {
+	ths.method = method
+	return ths
 }
 
 // Info logs a message with info level
-func (l Log) Info(format string, v ...interface{}) {
-	l.prepareMessage(l.zlog.Info(), format, v...)
+func (ths Log) Info(format string, v ...interface{}) {
+	ths.prepareMessage(ths.zlog.Info(), format, v...)
 }
 
 // Warn logs a message with warn level
-func (l Log) Warn(format string, v ...interface{}) {
-	l.prepareMessage(l.zlog.Warn(), format, v...)
+func (ths Log) Warn(format string, v ...interface{}) {
+	ths.prepareMessage(ths.zlog.Warn(), format, v...)
 }
 
 // Warn logs a message with warn level
-func (l Log) Error(format string, v ...interface{}) {
-	l.prepareMessage(l.zlog.Error(), format, v...)
+func (ths Log) Error(format string, v ...interface{}) {
+	ths.prepareMessage(ths.zlog.Error(), format, v...)
 }
 
 // Fatal logs a message with fatal level
-func (l Log) Fatal(format string, v ...interface{}) {
-	l.prepareMessage(l.zlog.Fatal(), format, v...)
+func (ths Log) Fatal(format string, v ...interface{}) {
+	ths.prepareMessage(ths.zlog.Fatal(), format, v...)
 }
 
 // Panic logs a message with panic level
-func (l Log) Panic(format string, v ...interface{}) {
-	l.prepareMessage(l.zlog.Panic(), format, v...)
+func (ths Log) Panic(format string, v ...interface{}) {
+	ths.prepareMessage(ths.zlog.Panic(), format, v...)
 }
 
 // Debug logs a message with debug level
-func (l Log) Debug(format string, v ...interface{}) {
-	l.prepareMessage(l.zlog.Debug(), format, v...)
+func (ths Log) Debug(format string, v ...interface{}) {
+	ths.prepareMessage(ths.zlog.Debug(), format, v...)
 }
 
 // prepareMessage prepares the message for log
-func (l Log) prepareMessage(event *zerolog.Event, format string, v ...interface{}) {
-	if len(l.method) != 0 {
-		event.Str("method", fmt.Sprintf("| %s", l.method))
+func (ths Log) prepareMessage(event *zerolog.Event, format string, v ...interface{}) {
+	if len(ths.method) != 0 {
+		event.Str("method", fmt.Sprintf("| %s", ths.method))
 	} else {
 		event.Str("method", "")
 	}
 
-	if len(l.requestID) != 0 {
-		event.Str("request_id", fmt.Sprintf("[%s]", l.requestID))
+	if len(ths.requestID) != 0 {
+		event.Str("request_id", fmt.Sprintf("[%s]", ths.requestID))
 	} else {
 		event.Str("request_id", "")
 	}

@@ -1,17 +1,17 @@
 package api
 
 import (
-	"fmt"
-
-	"hexagonal_arch_with_Golang/internal/models"
+	notificationDomain "hexagonal_arch_with_Golang/internal/app/domain/notification"
 )
 
 func (ths *Application) Notification(name, message string) {
+	nd := notificationDomain.New(ths.cfg)
+	nd.SetMassage(message)
+	nd.SetName(name)
 
-	psqlNotificationModel := models.NewPsqlNotification(name, message)
-	err := ths.db.NotificationRecord(psqlNotificationModel)
+	err := ths.db.NotificationRecord(nd)
 	if err != nil {
-		fmt.Printf("Error DB %s\n", err.Error())
+		ths.cfg.Logger.Error("Error DB %s", err.Error())
 	}
 
 }

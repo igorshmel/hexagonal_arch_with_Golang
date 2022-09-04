@@ -34,7 +34,7 @@ func (ths *File) NewFileDomain(cfg *config.Config) *File {
 func (ths *File) FileParseUrl() {
 	uuid, err := uuid2.NewV4()
 	if err != nil {
-		fmt.Printf("Fail generate uuidV4: %s\n", err.Error())
+		fmt.Printf("Fail generate uuidV4: %s", err.Error())
 	}
 	ths.fileName = fmt.Sprintf("%s%s", uuid.String(), ".jpg")
 
@@ -42,7 +42,7 @@ func (ths *File) FileParseUrl() {
 		for _, part := range fileUrlParts {
 			if strings.Contains(part, "jpg") {
 				parts := strings.Split(part, ".")
-				fmt.Printf("Name is: %s\n", parts[0])
+				fmt.Printf("Name is: %s", parts[0])
 				ths.fileName = parts[0]
 				break
 			}

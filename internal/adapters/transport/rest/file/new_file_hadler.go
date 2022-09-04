@@ -16,21 +16,21 @@ func (ths Endpoint) NewFileHandler() gin.HandlerFunc {
 		// request parse
 		if err := req.Parse(ctx); err != nil {
 			ths.logger.Error("unable to parse a request: %s", err)
-			ctx.JSON(http.StatusOK, err.Error())
+			ctx.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
 
 		// validate request
 		if err := req.Validate(); err != nil {
 			ths.logger.Error("error of validation: %s", err)
-			ctx.JSON(http.StatusOK, err.Error())
+			ctx.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
 
 		err := ths.app.NewFile(req.FileUrl)
 		if err != nil {
 			ths.logger.Error("filed Call toi app.NewFile(): %s", err)
-			ctx.JSON(http.StatusOK, err.Error())
+			ctx.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 
