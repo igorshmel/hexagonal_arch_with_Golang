@@ -23,7 +23,7 @@ func New(cfg *config.Config, app ports.AppPort) (*Adapter, error) {
 func (ths *Adapter) Run() {
 	err := ths.router.Run(ths.cfg.Env.ListenAddr)
 	if err != nil {
-		ths.cfg.Logger.Error("GIN run failed, error: %s\n", err)
+		ths.cfg.Logger.Error("GIN run failed, error: %s", err)
 	}
 }
 

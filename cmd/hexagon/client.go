@@ -45,6 +45,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not call File: %v", err)
 	}
-	log.Printf("Rpl from File: %s\n", r.String())
+	log.Printf("Rpl from File: %s", r.String())
 
 }

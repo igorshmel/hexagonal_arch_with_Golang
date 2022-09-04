@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 
 	"google.golang.org/grpc"
@@ -30,20 +29,20 @@ func New(cfg *config.Config, app ports.AppPort) (*Adapter, error) {
 	return ret, nil
 }
 
-func (a *Adapter) Run() {
+func (ths *Adapter) Run() {
 	grpcServer := grpc.NewServer()
-	pb.RegisterFileServiceServer(grpcServer, a)
-	if err := grpcServer.Serve(a.listen); err != nil {
-		log.Fatalf("failed to serve gRPC server over address %s: %v", a.cfg.GRPC.Address, err)
+	pb.RegisterFileServiceServer(grpcServer, ths)
+	if err := grpcServer.Serve(ths.listen); err != nil {
+		ths.cfg.Logger.Error("failed to serve gRPC server over address %s: %v", ths.cfg.GRPC.Address, err)
 	}
 }
 
-func (a *Adapter) File(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, error) {
+func (ths *Adapter) File(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, error) {
 	if fileReq == nil {
 		return nil, fmt.Errorf("input is mandatory")
 	}
 
-	err := a.app.NewFile(fileReq.Url)
+	err := ths.app.NewFile(fileReq.Url)
 	if err != nil {
 		return nil, fmt.Errorf("filed Call to app.NewFile()")
 	}

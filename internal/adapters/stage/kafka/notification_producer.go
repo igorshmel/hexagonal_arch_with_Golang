@@ -1,16 +1,14 @@
 package kafka
 
 import (
-	"fmt"
-
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
-func (a *Adapter) NotificationProducer(producer *pb.NotificationProducer) error {
+func (ths *Adapter) NotificationProducer(producer *pb.NotificationProducer) error {
 
-	err := a.produce(producer, producer.Topic)
+	err := ths.produce(producer, producer.Topic)
 	if err != nil {
-		fmt.Printf("failed NotificationProducer: %s\n", err)
+		ths.cfg.Logger.Error("failed NotificationProducer: %s", err)
 		return err
 	}
 	return nil

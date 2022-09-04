@@ -37,48 +37,48 @@ func New(cfg *config.Config, group string, app ports.AppPort) (*Adapter, error) 
 		"auto.offset.reset":  "earliest"})
 
 	if err != nil {
-		_, err = fmt.Fprintf(os.Stderr, "Failed to create consumer: %s\n", err)
+		_, err = fmt.Fprintf(os.Stderr, "Failed to create consumer: %s", err)
 		if err != nil {
 			return nil, err
 		}
 		os.Exit(1)
 	}
 
-	fmt.Printf("Created Consumer %v\n", c)
+	cfg.Logger.Info("Created Consumer %v", c)
 
 	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryUrl))
 
 	if err != nil {
-		fmt.Printf("Failed to create schema registry client: %s\n", err)
+		cfg.Logger.Error("Failed to create schema registry client: %s", err)
 		return nil, err
 	}
 
-	deser, err := protobuf.NewDeserializer(client, serde.ValueSerde, protobuf.NewDeserializerConfig())
+	deserializer, err := protobuf.NewDeserializer(client, serde.ValueSerde, protobuf.NewDeserializerConfig())
 	if err != nil {
-		fmt.Printf("Failed to create deserializer: %s\n", err)
+		cfg.Logger.Error("Failed to create deserializer: %s", err)
 		return nil, err
 	}
 	return &Adapter{
 		cfg:          cfg,
 		consumer:     c,
-		deserializer: deser,
+		deserializer: deserializer,
 		app:          app,
 	}, nil
 }
 
-func (a *Adapter) Consumer(topics []string, messageTypes ...protoreflect.MessageType) {
-
+func (ths *Adapter) Consumer(topics []string, messageTypes ...protoreflect.MessageType) {
+	l := ths.cfg.Logger
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	err := a.consumer.SubscribeTopics(topics, nil)
+	err := ths.consumer.SubscribeTopics(topics, nil)
 	// Register the Protobuf type so that Deserialize can be called.
 	// An alternative is to pass a pointer to an instance of the Protobuf type
 	// to the DeserializeInto method.
 	for _, mt := range messageTypes {
-		err = a.deserializer.ProtoRegistry.RegisterMessage(mt)
+		err = ths.deserializer.ProtoRegistry.RegisterMessage(mt)
 		if err != nil {
-			fmt.Printf("filed deserializer for %v \n", mt)
+			l.Error("filed deserializer for %v", mt)
 		}
 	}
 
@@ -87,55 +87,55 @@ func (a *Adapter) Consumer(topics []string, messageTypes ...protoreflect.Message
 	for run {
 		select {
 		case sig := <-sigChan:
-			fmt.Printf("Caught signal %v: terminating\n", sig)
+			l.Debug("Caught signal %v: terminating", sig)
 			run = false
 		default:
-			ev := a.consumer.Poll(100)
+			ev := ths.consumer.Poll(100)
 			if ev == nil {
 				continue
 			}
 
 			switch e := ev.(type) {
 			case *kafka.Message:
-				value, err := a.deserializer.Deserialize(*e.TopicPartition.Topic, e.Value)
+				value, err := ths.deserializer.Deserialize(*e.TopicPartition.Topic, e.Value)
 				if err != nil {
-					fmt.Printf("Failed to deserialize payload: %s\n", err)
+					l.Error("Failed to deserialize payload: %s", err)
 				} else {
 					switch value.(type) {
 					case *pb.NotificationProducer:
-						a.app.Notification(value.(*pb.NotificationProducer).Name, value.(*pb.NotificationProducer).Message)
-						fmt.Printf("NotificationProducer: %v\n", value)
+						ths.app.Notification(value.(*pb.NotificationProducer).Name, value.(*pb.NotificationProducer).Message)
+						l.Info("NotificationProducer: %v", value)
 					case *pb.FileProducer:
 						if value.(*pb.FileProducer).FileStatus == "parsing" {
-							go a.app.Download(
+							go ths.app.Download(
 								value.(*pb.FileProducer).FileUrl,
 								value.(*pb.FileProducer).FilePath,
 								value.(*pb.FileProducer).FileName,
 							)
 						}
 					}
-					fmt.Printf("%% Message on %s:\n%+v\n", e.TopicPartition, value)
+					l.Info("%% Message on %s: %+v", e.TopicPartition, value)
 				}
 				if e.Headers != nil {
-					fmt.Printf("%% Headers: %v\n", e.Headers)
+					l.Debug("%% Headers: %v", e.Headers)
 				}
 			case kafka.Error:
 				// Errors should generally be considered
 				// informational, the client will try to
 				// automatically recover.
-				_, err = fmt.Fprintf(os.Stderr, "%% Error: %v: %v\n", e.Code(), e)
+				_, err = fmt.Fprintf(os.Stderr, "%% Error: %v: %v", e.Code(), e)
 				if err != nil {
-					fmt.Printf("filed Fprint for kafkaError %s \n", err.Error())
+					l.Error("failed Fprint for kafkaError %s", err.Error())
 				}
 			default:
-				fmt.Printf("Ignored %v\n", e)
+				l.Debug("Ignored %v", e)
 			}
 		}
 	}
 
-	fmt.Printf("Closing consumer\n")
-	err = a.consumer.Close()
+	fmt.Printf("Closing consumer")
+	err = ths.consumer.Close()
 	if err != nil {
-		fmt.Printf("filed closing consumer %s \n", err.Error())
+		l.Error("filed closing consumer %s", err.Error())
 	}
 }

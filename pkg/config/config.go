@@ -95,7 +95,7 @@ func New(ctx context.Context) *Config {
 	}
 }
 
-func (c *Config) Read() error {
+func (ths *Config) Read() error {
 	if isDotEnvPresent() {
 		viper.AddConfigPath(".")
 		viper.SetConfigName(".env")
@@ -108,15 +108,15 @@ func (c *Config) Read() error {
 	}
 	viper.AutomaticEnv()
 
-	return c.parseConfig(viper.GetViper())
+	return ths.parseConfig(viper.GetViper())
 }
 
-func (c *Config) Write() error {
+func (ths *Config) Write() error {
 	return fmt.Errorf("not implemented")
 }
 
-func (c *Config) parseConfig(v *viper.Viper) error {
-	*c = Config{
+func (ths *Config) parseConfig(v *viper.Viper) error {
+	*ths = Config{
 		HostName:     v.GetString("HOSTNAME"),
 		FrontEndPath: v.GetString("FRONT_END_PATH"),
 		Debug:        v.GetBool("DEBUG"),
@@ -146,7 +146,7 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 		},
 	}
 
-	if c.Debug {
+	if ths.Debug {
 		log.Println("WARNING: DEBUG Mode enabled!")
 	}
 

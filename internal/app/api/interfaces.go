@@ -7,6 +7,10 @@ import (
 
 type Notification interface {
 	Notification(string, string) string
+	GetName() string
+	GetMassage() string
+	SetMassage(string)
+	SetName(string)
 }
 
 type File interface {

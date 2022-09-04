@@ -2,17 +2,17 @@ package ports
 
 import (
 	"hexagonal_arch_with_Golang/internal/app/domain/file"
-	"hexagonal_arch_with_Golang/internal/models"
+	notificationDomain "hexagonal_arch_with_Golang/internal/app/domain/notification"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
 type DbPort interface {
 	GetRandomNotification(string) string
-	NewRecordFile(model *models.PsqlFile) error
+	NewRecordFile(model *fileDomain.File) error
 	ReadFile(file *fileDomain.File) error
 	IsFileExists(fileName string) bool
 	ChangeStatusFile(fileName, fileStatus string) error
-	NotificationRecord(model *models.PsqlNotification) error
+	NotificationRecord(model *notificationDomain.Notification) error
 }
 
 type KafkaPort interface {
