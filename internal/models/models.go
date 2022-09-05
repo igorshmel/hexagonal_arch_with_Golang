@@ -13,7 +13,7 @@ type PsqlFile struct {
 	BaseModel
 	FileName   string `gorm:"type:varchar(255)"`
 	FilePath   string `gorm:"type:text"`
-	FileUrl    string `gorm:"type:text"`
+	FileURL    string `gorm:"type:text"`
 	FileHash   string `gorm:"type:text"`
 	FileStatus string `gorm:"type:varchar(255)"`
 }
@@ -41,7 +41,7 @@ func NewPsqlFile(name, path, url, hash, status string) *PsqlFile {
 	return &PsqlFile{
 		FileName:   name,
 		FilePath:   path,
-		FileUrl:    url,
+		FileURL:    url,
 		FileHash:   hash,
 		FileStatus: status,
 	}

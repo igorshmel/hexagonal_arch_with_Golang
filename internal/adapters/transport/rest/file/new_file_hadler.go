@@ -27,7 +27,7 @@ func (ths Endpoint) NewFileHandler() gin.HandlerFunc {
 			return
 		}
 
-		err := ths.app.NewFile(req.FileUrl)
+		err := ths.app.NewFile(req.FileURL)
 		if err != nil {
 			ths.logger.Error("filed Call toi app.NewFile(): %s", err)
 			ctx.JSON(http.StatusInternalServerError, err.Error())

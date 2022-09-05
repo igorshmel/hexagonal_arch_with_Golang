@@ -19,21 +19,21 @@ func DownloadFile(filePath, url string) error {
 			}
 		}()
 		// Create the file
-		if out, err := os.Create(filePath); err == nil {
+		if out, errCreate := os.Create(filePath); errCreate == nil {
 			defer func() {
-				if err = out.Close(); err != nil {
-					err = errors.New("DownloadFile error out.Close(): " + fmt.Sprint(err))
+				if errCreate = out.Close(); errCreate != nil {
+					errCreate = errors.New("DownloadFile error out.Close(): " + fmt.Sprint(errCreate))
 				}
 			}()
 			// Write the body to file
-			if _, err = io.Copy(out, resp.Body); err != nil {
-				err = errors.New("DownloadFile error io.Copy: " + fmt.Sprint(err))
-				return err
+			if _, errCreate = io.Copy(out, resp.Body); errCreate != nil {
+				errCreate = errors.New("DownloadFile error io.Copy: " + fmt.Sprint(errCreate))
+				return errCreate
 			}
 
 		} else {
-			err = errors.New("DownloadFile error os.Create: " + fmt.Sprint(err))
-			return err
+			errCreate = errors.New("DownloadFile error os.Create: " + fmt.Sprint(errCreate))
+			return errCreate
 		}
 	} else {
 		err = errors.New("DownloadFile error http.Get: " + fmt.Sprint(err))

@@ -39,6 +39,9 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	}
 
 	db, err := gorm.Open(driver, &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -60,7 +63,7 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	}*/
 
 	if migrate {
-		err := db.AutoMigrate(
+		err = db.AutoMigrate(
 			&models.PsqlNotification{},
 			&models.PsqlFile{},
 		)
@@ -149,7 +152,7 @@ func fileModelFromDomain(fd *fileDomain.File) *models.PsqlFile {
 	psqlFileModel := models.NewPsqlFile(
 		fd.GetFileName(),
 		fd.GetFilePath(),
-		fd.GetFileUrl(),
+		fd.GetFileURL(),
 		fd.GetFileHash(),
 		fd.GetFileStatus(),
 	)

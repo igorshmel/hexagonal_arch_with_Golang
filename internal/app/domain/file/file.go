@@ -11,7 +11,7 @@ type File struct {
 	cfg        *config.Config
 	fileName   string
 	filePath   string
-	fileUrl    string
+	fileURL    string
 	fileHash   string
 	fileStatus string
 }
@@ -31,14 +31,14 @@ func (ths *File) NewFileDomain(cfg *config.Config) *File {
 	}
 }
 
-func (ths *File) FileParseUrl() {
+func (ths *File) FileParseURL() {
 	uuid, err := uuid2.NewV4()
 	if err != nil {
 		fmt.Printf("Fail generate uuidV4: %s", err.Error())
 	}
 	ths.fileName = fmt.Sprintf("%s%s", uuid.String(), ".jpg")
 
-	/*	fileUrlParts := strings.Split(ths.fileUrl, "/")
+	/*	fileUrlParts := strings.Split(ths.fileURL, "/")
 		for _, part := range fileUrlParts {
 			if strings.Contains(part, "jpg") {
 				parts := strings.Split(part, ".")
@@ -58,8 +58,8 @@ func (ths *File) GetFilePath() string {
 	return ths.filePath
 }
 
-func (ths *File) GetFileUrl() string {
-	return ths.fileUrl
+func (ths *File) GetFileURL() string {
+	return ths.fileURL
 }
 
 func (ths *File) GetFileHash() string {
@@ -78,8 +78,8 @@ func (ths *File) SetFilePath(filePath string) {
 	ths.filePath = filePath
 }
 
-func (ths *File) SetFileUrl(fileUrl string) {
-	ths.fileUrl = fileUrl
+func (ths *File) SetFileURL(fileURL string) {
+	ths.fileURL = fileURL
 }
 
 func (ths *File) SetFileStatus(fileStatus string) {

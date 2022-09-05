@@ -14,15 +14,15 @@ type Notification interface {
 }
 
 type File interface {
-	FileParseUrl()
+	FileParseURL()
 	GetFileName() string
 	GetFilePath() string
-	GetFileUrl() string
+	GetFileURL() string
 	GetFileHash() string
 	GetFileStatus() string
 	SetFileName(fileName string)
 	SetFilePath(filePath string)
-	SetFileUrl(fileUrl string)
+	SetFileURL(fileURL string)
 	SetFileStatus(fileStatus string)
 	NewFileDomain(cfg *config.Config) *fileDomain.File
 }

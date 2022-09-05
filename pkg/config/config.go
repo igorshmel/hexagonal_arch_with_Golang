@@ -53,7 +53,7 @@ type GRPC struct {
 
 type Kafka struct {
 	BootStrapServers  string
-	SchemaRegistryUrl string
+	SchemaRegistryURL string
 }
 
 type Db struct {
@@ -134,7 +134,7 @@ func (ths *Config) parseConfig(v *viper.Viper) error {
 		},
 		Kafka: Kafka{
 			BootStrapServers:  v.GetString("KAFKA_BOOTSTRAP_SERVERS"),
-			SchemaRegistryUrl: v.GetString("SCHEMA_REGISTRY_URL"),
+			SchemaRegistryURL: v.GetString("SCHEMA_REGISTRY_URL"),
 		},
 		Db: Db{
 			Username: v.GetString("DB_USERNAME"),

@@ -7,11 +7,11 @@ import (
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
-func (ths *Application) Download(fileUrl, filePath, fileName string) {
+func (ths *Application) Download(fileURL, filePath, fileName string) {
 	l := ths.cfg.Logger
 	l.Info("start goroutine for Download:  %s", fileName)
 
-	err := common.DownloadFile(fmt.Sprintf("%s%s", filePath, fileName), fileUrl)
+	err := common.DownloadFile(fmt.Sprintf("%s%s", filePath, fileName), fileURL)
 	if err != nil {
 		l.Error("DownloadFile error  %s", err.Error())
 

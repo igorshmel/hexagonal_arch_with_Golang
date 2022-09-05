@@ -20,7 +20,7 @@ var _ ports.KafkaPort = &Adapter{}
 func New(cfg *config.Config) (*Adapter, error) {
 
 	bootstrapServers := cfg.Kafka.BootStrapServers
-	schemaRegistryUrl := cfg.Kafka.SchemaRegistryUrl
+	schemaRegistryURL := cfg.Kafka.SchemaRegistryURL
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": bootstrapServers})
 	if err != nil {
@@ -29,7 +29,7 @@ func New(cfg *config.Config) (*Adapter, error) {
 	}
 	cfg.Logger.Info("Created Producer %v", producer)
 
-	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryUrl))
+	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryURL))
 	if err != nil {
 		cfg.Logger.Error("Failed to create schema registry client: %s", err)
 		return nil, err

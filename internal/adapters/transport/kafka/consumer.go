@@ -28,7 +28,7 @@ var _ ports.KafkaConsumerPort = &Adapter{}
 func New(cfg *config.Config, group string, app ports.AppPort) (*Adapter, error) {
 
 	bootstrapServers := cfg.Kafka.BootStrapServers
-	schemaRegistryUrl := cfg.Kafka.SchemaRegistryUrl
+	schemaRegistryURL := cfg.Kafka.SchemaRegistryURL
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":  bootstrapServers,
@@ -46,7 +46,7 @@ func New(cfg *config.Config, group string, app ports.AppPort) (*Adapter, error) 
 
 	cfg.Logger.Info("Created Consumer %v", c)
 
-	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryUrl))
+	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(schemaRegistryURL))
 
 	if err != nil {
 		cfg.Logger.Error("Failed to create schema registry client: %s", err)
@@ -72,6 +72,10 @@ func (ths *Adapter) Consumer(topics []string, messageTypes ...protoreflect.Messa
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	err := ths.consumer.SubscribeTopics(topics, nil)
+	if err != nil {
+		l.Error("filed consumer subscribe topics %s", err.Error())
+	}
+
 	// Register the Protobuf type so that Deserialize can be called.
 	// An alternative is to pass a pointer to an instance of the Protobuf type
 	// to the DeserializeInto method.
@@ -97,21 +101,27 @@ func (ths *Adapter) Consumer(topics []string, messageTypes ...protoreflect.Messa
 
 			switch e := ev.(type) {
 			case *kafka.Message:
-				value, err := ths.deserializer.Deserialize(*e.TopicPartition.Topic, e.Value)
-				if err != nil {
-					l.Error("Failed to deserialize payload: %s", err)
+				value, errDes := ths.deserializer.Deserialize(*e.TopicPartition.Topic, e.Value)
+				if errDes != nil {
+					l.Error("Failed to deserialize payload: %s", errDes)
 				} else {
 					switch value.(type) {
 					case *pb.NotificationProducer:
-						ths.app.Notification(value.(*pb.NotificationProducer).Name, value.(*pb.NotificationProducer).Message)
+						v := value.(*pb.NotificationProducer)
+						if v != nil {
+							ths.app.Notification(v.Name, v.Message)
+						}
 						l.Info("NotificationProducer: %v", value)
 					case *pb.FileProducer:
-						if value.(*pb.FileProducer).FileStatus == "parsing" {
-							go ths.app.Download(
-								value.(*pb.FileProducer).FileUrl,
-								value.(*pb.FileProducer).FilePath,
-								value.(*pb.FileProducer).FileName,
-							)
+						v := value.(*pb.FileProducer)
+						if v != nil {
+							if v.FileStatus == "parsing" {
+								go ths.app.Download(
+									v.FileUrl,
+									v.FilePath,
+									v.FileName,
+								)
+							}
 						}
 					}
 					l.Info("%% Message on %s: %+v", e.TopicPartition, value)
