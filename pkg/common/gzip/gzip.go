@@ -2,6 +2,7 @@ package common
 
 import (
 	"compress/gzip"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -43,7 +44,12 @@ func Gzip(next http.Handler) http.Handler {
 		defer gzPool.Put(gz)
 
 		gz.Reset(w)
-		defer gz.Close()
+		defer func(gz *gzip.Writer) {
+			err := gz.Close()
+			if err != nil {
+				fmt.Printf("failed Close gz: %s", err.Error())
+			}
+		}(gz)
 
 		next.ServeHTTP(&gzipResponseWriter{ResponseWriter: w, Writer: gz}, r)
 	})

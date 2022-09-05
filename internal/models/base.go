@@ -26,10 +26,10 @@ type BaseModelSoftDelete struct {
 
 // BeforeCreate will set a UUID rather than numeric ID.
 func (base *BaseModel) BeforeCreate(scope *gorm.DB) error {
-	randomUuid, err := uuid.NewRandom()
+	randomUUID, err := uuid.NewRandom()
 	if err != nil {
 		return err
 	}
-	scope.Statement.SetColumn("ID", randomUuid)
+	scope.Statement.SetColumn("ID", randomUUID)
 	return nil
 }

@@ -6,7 +6,7 @@ import validation "github.com/go-ozzo/ozzo-validation/v4"
 
 // FileRequest is request
 type FileRequest struct {
-	FileUrl string `json:"file_url"`
+	FileURL string `json:"file_url"`
 }
 
 // NewFileRequest is constructor
@@ -22,6 +22,6 @@ func (ths *FileRequest) Parse(c *gin.Context) error {
 // Validate validates an input request
 func (ths *FileRequest) Validate() error {
 	return validation.ValidateStruct(ths,
-		validation.Field(&ths.FileUrl, validation.Required.Error("is required")),
+		validation.Field(&ths.FileURL, validation.Required.Error("is required")),
 	)
 }

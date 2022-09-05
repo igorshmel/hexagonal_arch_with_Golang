@@ -4,16 +4,16 @@ import (
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
-func (ths *Application) NewFile(fileUrl string) error {
+func (ths *Application) NewFile(fileURL string) error {
 	l := ths.cfg.Logger
 
 	fileDomain := ths.file.NewFileDomain(ths.cfg)
 
-	fileDomain.SetFileUrl(fileUrl)
+	fileDomain.SetFileURL(fileURL)
 	fileDomain.SetFileStatus("parsing")
 	fileDomain.SetFilePath("../files/")
 
-	fileDomain.FileParseUrl()
+	fileDomain.FileParseURL()
 
 	err := ths.db.NewRecordFile(fileDomain)
 	if err != nil {
@@ -24,7 +24,7 @@ func (ths *Application) NewFile(fileUrl string) error {
 	fileProducer := pb.FileProducer{
 		FileName:   fileDomain.GetFileName(),
 		FilePath:   fileDomain.GetFilePath(),
-		FileUrl:    fileUrl,
+		FileUrl:    fileURL,
 		FileStatus: fileDomain.GetFileStatus(),
 		Topic:      "file",
 	}
