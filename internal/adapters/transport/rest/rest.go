@@ -2,18 +2,18 @@ package rest
 
 import (
 	"github.com/gin-gonic/gin"
-	"hexagonal_arch_with_Golang/internal/adapters/ports"
 	"hexagonal_arch_with_Golang/internal/adapters/transport/rest/file"
+	"hexagonal_arch_with_Golang/internal/app"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
 
 type Adapter struct {
 	cfg    *config.Config
-	app    ports.AppPort
+	app    app.ApiPort
 	router *gin.Engine
 }
 
-func New(cfg *config.Config, app ports.AppPort) (*Adapter, error) {
+func New(cfg *config.Config, app app.ApiPort) (*Adapter, error) {
 	router := gin.New()
 	ret := &Adapter{cfg: cfg, app: app, router: router}
 

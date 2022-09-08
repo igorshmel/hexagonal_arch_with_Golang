@@ -8,8 +8,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"hexagonal_arch_with_Golang/internal/adapters/ports"
-	"hexagonal_arch_with_Golang/internal/app/domain/file"
-	notificationDomain "hexagonal_arch_with_Golang/internal/app/domain/notification"
+	"hexagonal_arch_with_Golang/internal/domain/file"
+	"hexagonal_arch_with_Golang/internal/domain/notification"
 	"hexagonal_arch_with_Golang/internal/models"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
