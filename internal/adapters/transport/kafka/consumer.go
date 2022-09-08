@@ -12,6 +12,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"hexagonal_arch_with_Golang/internal/adapters/ports"
+	"hexagonal_arch_with_Golang/internal/app"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
@@ -20,12 +21,12 @@ type Adapter struct {
 	cfg          *config.Config
 	consumer     *kafka.Consumer
 	deserializer *protobuf.Deserializer
-	app          ports.AppPort
+	app          app.ApiPort
 }
 
 var _ ports.KafkaConsumerPort = &Adapter{}
 
-func New(cfg *config.Config, group string, app ports.AppPort) (*Adapter, error) {
+func New(cfg *config.Config, group string, app app.ApiPort) (*Adapter, error) {
 
 	bootstrapServers := cfg.Kafka.BootStrapServers
 	schemaRegistryURL := cfg.Kafka.SchemaRegistryURL

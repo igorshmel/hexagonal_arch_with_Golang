@@ -1,7 +1,7 @@
-package api
+package domain
 
 import (
-	"hexagonal_arch_with_Golang/internal/app/domain/file"
+	"hexagonal_arch_with_Golang/internal/domain/file"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
 

@@ -1,7 +1,7 @@
 package api
 
 import (
-	notificationDomain "hexagonal_arch_with_Golang/internal/app/domain/notification"
+	"hexagonal_arch_with_Golang/internal/domain/notification"
 )
 
 func (ths *Application) Notification(name, message string) {

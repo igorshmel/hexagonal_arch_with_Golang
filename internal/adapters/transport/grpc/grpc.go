@@ -6,18 +6,18 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-	"hexagonal_arch_with_Golang/internal/adapters/ports"
+	"hexagonal_arch_with_Golang/internal/app"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
 type Adapter struct {
 	cfg    *config.Config
-	app    ports.AppPort
+	app    app.ApiPort
 	listen net.Listener
 }
 
-func New(cfg *config.Config, app ports.AppPort) (*Adapter, error) {
+func New(cfg *config.Config, app app.ApiPort) (*Adapter, error) {
 	ret := &Adapter{cfg: cfg, app: app}
 
 	listen, err := net.Listen(cfg.GRPC.Network, cfg.GRPC.Address)
@@ -37,7 +37,7 @@ func (ths *Adapter) Run() {
 	}
 }
 
-func (ths *Adapter) File(ctx context.Context, fileReq *pb.FileReq) (*pb.FileRpl, error) {
+func (ths *Adapter) File(_ context.Context, fileReq *pb.FileReq) (*pb.FileRpl, error) {
 	if fileReq == nil {
 		return nil, fmt.Errorf("input is mandatory")
 	}
