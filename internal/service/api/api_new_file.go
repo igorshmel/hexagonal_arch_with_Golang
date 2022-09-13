@@ -4,7 +4,7 @@ import (
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
-func (ths *Application) NewFile(fileURL string) error {
+func (ths *Service) NewFile(fileURL string) error {
 	l := ths.cfg.Logger
 
 	fileDomain := ths.file.NewFileDomain(ths.cfg)

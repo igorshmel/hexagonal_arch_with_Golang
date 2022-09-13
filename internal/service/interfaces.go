@@ -1,4 +1,4 @@
-package app
+package service
 
 type ApiPort interface {
 	NewFile(fileURL string) error

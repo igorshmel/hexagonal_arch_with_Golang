@@ -12,7 +12,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/schemaregistry/serde/protobuf"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"hexagonal_arch_with_Golang/internal/adapters/ports"
-	"hexagonal_arch_with_Golang/internal/app"
+	"hexagonal_arch_with_Golang/internal/service"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
@@ -21,12 +21,12 @@ type Adapter struct {
 	cfg          *config.Config
 	consumer     *kafka.Consumer
 	deserializer *protobuf.Deserializer
-	app          app.ApiPort
+	service      service.ApiPort
 }
 
 var _ ports.KafkaConsumerPort = &Adapter{}
 
-func New(cfg *config.Config, group string, app app.ApiPort) (*Adapter, error) {
+func New(cfg *config.Config, group string, app service.ApiPort) (*Adapter, error) {
 
 	bootstrapServers := cfg.Kafka.BootStrapServers
 	schemaRegistryURL := cfg.Kafka.SchemaRegistryURL
@@ -63,7 +63,7 @@ func New(cfg *config.Config, group string, app app.ApiPort) (*Adapter, error) {
 		cfg:          cfg,
 		consumer:     c,
 		deserializer: deserializer,
-		app:          app,
+		service:      app,
 	}, nil
 }
 
@@ -110,14 +110,14 @@ func (ths *Adapter) Consumer(topics []string, messageTypes ...protoreflect.Messa
 					case *pb.NotificationProducer:
 						v := value.(*pb.NotificationProducer)
 						if v != nil {
-							ths.app.Notification(v.Name, v.Message)
+							ths.service.Notification(v.Name, v.Message)
 						}
 						l.Info("NotificationProducer: %v", value)
 					case *pb.FileProducer:
 						v := value.(*pb.FileProducer)
 						if v != nil {
 							if v.FileStatus == "parsing" {
-								go ths.app.Download(
+								go ths.service.Download(
 									v.FileUrl,
 									v.FilePath,
 									v.FileName,
