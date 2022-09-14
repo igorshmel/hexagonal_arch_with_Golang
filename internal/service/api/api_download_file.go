@@ -7,7 +7,7 @@ import (
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
-func (ths *Application) Download(fileURL, filePath, fileName string) {
+func (ths *Service) Download(fileURL, filePath, fileName string) {
 	l := ths.cfg.Logger
 	l.Info("start goroutine for Download:  %s", fileName)
 

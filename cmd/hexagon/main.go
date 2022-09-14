@@ -13,9 +13,9 @@ import (
 	"hexagonal_arch_with_Golang/internal/adapters/transport/grpc"
 	kafkaCons "hexagonal_arch_with_Golang/internal/adapters/transport/kafka"
 	"hexagonal_arch_with_Golang/internal/adapters/transport/rest"
-	"hexagonal_arch_with_Golang/internal/app/api"
 	"hexagonal_arch_with_Golang/internal/domain/file"
 	"hexagonal_arch_with_Golang/internal/domain/notification"
+	"hexagonal_arch_with_Golang/internal/service/api"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 	"hexagonal_arch_with_Golang/pkg/logger"
@@ -45,10 +45,10 @@ func main() {
 
 	kf, err := kafka.New(cfg)
 	if err != nil {
-		fmt.Printf("DB connect error: %s", err)
+		fmt.Printf("Kafka init error: %s", err)
 	}
 
-	// Create the Domain layer and Application layer
+	// Create the Domain layer and Service layer
 	hw := notificationDomain.New(cfg)
 	domainFile := fileDomain.New(cfg)
 	app := api.New(cfg, db, kf, hw, domainFile)

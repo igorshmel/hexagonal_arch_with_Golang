@@ -6,7 +6,7 @@ import (
 	"hexagonal_arch_with_Golang/pkg/config"
 )
 
-type Application struct {
+type Service struct {
 	cfg          *config.Config
 	db           ports.DbPort
 	kf           ports.KafkaPort
@@ -15,10 +15,10 @@ type Application struct {
 }
 
 // Check if we actually implement all the ports.
-//var _ ports.AppPort = &Application{}
+//var _ ports.AppPort = &Service{}
 
-func New(cfg *config.Config, db ports.DbPort, kf ports.KafkaPort, ntf domain.Notification, file domain.File) *Application {
-	return &Application{
+func New(cfg *config.Config, db ports.DbPort, kf ports.KafkaPort, ntf domain.Notification, file domain.File) *Service {
+	return &Service{
 		cfg:          cfg,
 		db:           db,
 		kf:           kf,

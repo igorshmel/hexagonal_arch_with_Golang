@@ -6,18 +6,18 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-	"hexagonal_arch_with_Golang/internal/app"
+	"hexagonal_arch_with_Golang/internal/service"
 	"hexagonal_arch_with_Golang/pkg/config"
 	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
 type Adapter struct {
 	cfg    *config.Config
-	app    app.ApiPort
+	app    service.ApiPort
 	listen net.Listener
 }
 
-func New(cfg *config.Config, app app.ApiPort) (*Adapter, error) {
+func New(cfg *config.Config, app service.ApiPort) (*Adapter, error) {
 	ret := &Adapter{cfg: cfg, app: app}
 
 	listen, err := net.Listen(cfg.GRPC.Network, cfg.GRPC.Address)
