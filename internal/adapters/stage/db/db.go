@@ -9,8 +9,6 @@ import (
 	"gorm.io/gorm"
 	"hexagonal_arch_with_Golang/internal/adapters/ports"
 	"hexagonal_arch_with_Golang/internal/adapters/stage/db/models"
-	"hexagonal_arch_with_Golang/internal/domain/file"
-	"hexagonal_arch_with_Golang/internal/domain/notification"
 	"hexagonal_arch_with_Golang/pkg/config"
 )
 
@@ -78,20 +76,10 @@ func New(cfg *config.Config, migrate bool) (*Adapter, error) {
 	}, nil
 }
 
-func (ths *Adapter) GetRandomNotification(name string) string {
-	g := models.PsqlNotification{Name: name}
-	err := ths.db.Table("notifications").Create(&g).Error
-	if err != nil {
-		return err.Error()
-	}
-	return "OK"
-}
+func (ths *Adapter) NewRecordFile(fileModel *models.PsqlFile) error {
 
-func (ths *Adapter) NewRecordFile(fd *fileDomain.File) error {
-	psqlFileModel := fileModelFromDomain(fd)
-
-	err := ths.db.Table(psqlFileModel.TableName()).
-		Create(psqlFileModel).Error
+	err := ths.db.Table(fileModel.TableName()).
+		Create(fileModel).Error
 	if err != nil {
 		return err
 	}
@@ -101,14 +89,6 @@ func (ths *Adapter) NewRecordFile(fd *fileDomain.File) error {
 func (ths *Adapter) ChangeStatusFile(fileName, fileStatus string) error {
 	err := ths.db.Table("files").
 		Where("file_name=?", fileName).UpdateColumn("file_status", fileStatus).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ths *Adapter) ReadFile(domain *fileDomain.File) error {
-	err := ths.db.Table("files").Where("file_name=?", domain.GetFileName()).Find(domain).Error
 	if err != nil {
 		return err
 	}
@@ -135,47 +115,3 @@ func (ths *Adapter) IsFileExists(fileName string) bool {
 	}
 	return exists
 }
-
-func (ths *Adapter) NotificationRecord(nd *notificationDomain.Notification) error {
-
-	psqlNotificationModel := notificationModelFromDomain(nd)
-
-	err := ths.db.Table(psqlNotificationModel.TableName()).
-		Create(psqlNotificationModel).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func fileModelFromDomain(fd *fileDomain.File) *models.PsqlFile {
-	psqlFileModel := models.NewPsqlFile(
-		fd.GetFileName(),
-		fd.GetFilePath(),
-		fd.GetFileURL(),
-		fd.GetFileHash(),
-		fd.GetFileStatus(),
-	)
-	return psqlFileModel
-}
-
-func notificationModelFromDomain(nd *notificationDomain.Notification) *models.PsqlNotification {
-	psqlNotificationModel := models.NewPsqlNotification(
-		nd.GetName(),
-		nd.GetMassage(),
-	)
-	return psqlNotificationModel
-}
-
-//// PsqlToDomain converts into a domain.File
-//func (ths *Adapter) PsqlToDomain() *fileDomain.File {
-//	return fileDomain.New(
-//		ths.cfg,
-//		domain.UserUUID(ths.UserUUID),
-//		domain.ConfirmToken(ths.ConfirmToken),
-//		domain.ExpiredToken(ths.ExpiredToken),
-//		domain.TypeToken(ths.TypeToken),
-//		domain.UsedFlag(ths.Used),
-//		domain.Phone(ths.Phone),
-//	)
-//}

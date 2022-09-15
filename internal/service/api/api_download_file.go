@@ -3,38 +3,30 @@ package api
 import (
 	"fmt"
 
+	"hexagonal_arch_with_Golang/internal/adapters/stage/db/models"
 	common "hexagonal_arch_with_Golang/pkg/common/file"
-	"hexagonal_arch_with_Golang/pkg/dto/pb"
 )
 
 func (ths *Service) Download(fileURL, filePath, fileName string) {
+
 	l := ths.cfg.Logger
 	l.Info("start goroutine for Download:  %s", fileName)
 
 	err := common.DownloadFile(fmt.Sprintf("%s%s", filePath, fileName), fileURL)
 	if err != nil {
 		l.Error("DownloadFile error  %s", err.Error())
-
-		newNotificationProducer := pb.NotificationProducer{
-			Name:    fileName,
-			Message: "error download file",
-			Topic:   "notification",
-		}
-		err = ths.kf.NotificationProducer(&newNotificationProducer)
-		if err != nil {
-			l.Error("Error  %s", err.Error())
-		}
 	} else {
 		l.Info("download success! %s", fileName)
 
-		newNotificationProducer := pb.NotificationProducer{
-			Name:    fileName,
-			Message: "success download file",
-			Topic:   "notification",
+		newFileModel := models.PsqlFile{
+			FilePath:   filePath,
+			FileName:   fileName,
+			FileURL:    fileURL,
+			FileStatus: "parse",
 		}
-		err = ths.kf.NotificationProducer(&newNotificationProducer)
+		err = ths.db.NewRecordFile(&newFileModel)
 		if err != nil {
-			l.Error("Error  %s", err.Error())
+			l.Info("DB Record fail: %s", err.Error())
 		}
 	}
 

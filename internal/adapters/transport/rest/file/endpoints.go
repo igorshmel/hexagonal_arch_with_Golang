@@ -7,11 +7,11 @@ import (
 
 // Endpoint is endpoint for /account routes
 type Endpoint struct {
-	logger logger.Logger
-	app    service.ApiPort
+	logger  logger.Logger
+	service service.ApiPort
 }
 
 // NewEndpoint is constructor for Endpoint
 func NewEndpoint(logger logger.Logger, app service.ApiPort) *Endpoint {
-	return &Endpoint{logger: logger, app: app}
+	return &Endpoint{logger: logger, service: app}
 }

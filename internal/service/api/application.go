@@ -7,22 +7,18 @@ import (
 )
 
 type Service struct {
-	cfg          *config.Config
-	db           ports.DbPort
-	kf           ports.KafkaPort
-	notification domain.Notification
-	file         domain.File
+	cfg  *config.Config
+	db   ports.DbPort
+	file domain.File
 }
 
 // Check if we actually implement all the ports.
 //var _ ports.AppPort = &Service{}
 
-func New(cfg *config.Config, db ports.DbPort, kf ports.KafkaPort, ntf domain.Notification, file domain.File) *Service {
+func New(cfg *config.Config, db ports.DbPort, file domain.File) *Service {
 	return &Service{
-		cfg:          cfg,
-		db:           db,
-		kf:           kf,
-		notification: ntf,
-		file:         file,
+		cfg:  cfg,
+		db:   db,
+		file: file,
 	}
 }

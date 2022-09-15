@@ -8,14 +8,14 @@ import (
 )
 
 type Adapter struct {
-	cfg    *config.Config
-	app    service.ApiPort
-	router *gin.Engine
+	cfg     *config.Config
+	service service.ApiPort
+	router  *gin.Engine
 }
 
 func New(cfg *config.Config, app service.ApiPort) (*Adapter, error) {
 	router := gin.New()
-	ret := &Adapter{cfg: cfg, app: app, router: router}
+	ret := &Adapter{cfg: cfg, service: app, router: router}
 
 	return ret, nil
 }
@@ -33,7 +33,7 @@ func (ths *Adapter) FileHandlers() {
 	apiGroup := ths.router.Group("/api")
 
 	// account routes
-	accountEndpoint := file.NewEndpoint(ths.cfg.Logger, ths.app)
+	accountEndpoint := file.NewEndpoint(ths.cfg.Logger, ths.service)
 	apiGroup.POST("/file_url/", accountEndpoint.NewFileHandler())
 
 	ths.cfg.Logger.Info("route File handlers are installed...")
